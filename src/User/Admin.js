@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import Sidebar from '../Components/Sidebar'
-import ProductForm from '../Components/ProductForm'
-import ProductCard from '../Components/ProductCard'
+// import ProductForm from '../Components/ProductForm'
+import Dashboard from '../Components/Dashboard'
 import AddFarmerForm from '../Components/AddFarmerForm'
 function Admin() {
     const [dashboard , setDashboard]= useState(true)
@@ -89,10 +89,10 @@ function Admin() {
    <>
     <div>
        
-       <ProductForm/>
+       {/* <ProductForm/> */}
       </div>
       <div>
-          <ProductCard/>
+          <Dashboard/>
           </div></>
 )}
 {productsdata&&(

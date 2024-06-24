@@ -1,5 +1,5 @@
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { getFirestore, collection, addDoc,setDoc, doc } from 'firebase/firestore';
+import { getFirestore,setDoc, doc } from 'firebase/firestore';
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
