@@ -360,6 +360,7 @@ function Products() {
           )}
 </div>
 <div>
+  <div></div>
 <div className="relative h-[400px] w-full  overflow-hidden">
   <motion.img
     className="h-full w-full object-cover"
