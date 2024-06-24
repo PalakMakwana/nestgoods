@@ -95,7 +95,7 @@ function Products() {
       setShowFruits(false);
     }
   };
-
+  const userName = JSON.parse(localStorage.getItem('user'));
   const [range, setRange] = useState(50);
   const handleRange = (e) => {
     setRange(e.target.value);
@@ -123,6 +123,7 @@ function Products() {
           <p   style={{ fontFamily: "'Unbounded', sans-serif" }} className="text-green-800 text-2xl mt-2   items-center  font-bold">Prakrutik Aahar Kendra</p>
 
          </div>
+
                    <motion.div
             className="flex space-x-4 items-center"
             initial={{ opacity: 0 }}
@@ -191,6 +192,12 @@ function Products() {
               style={{ fontFamily: "'Unbounded', sans-serif" }}
             >
               Grocery & Herbs
+              {userName && (
+                        <div className="flex  items-center mt-2">
+                            <h2 className=" mr-96">Welcome, {userName}!</h2>
+
+                        </div>
+                    )}
             </motion.p>
             <motion.p
               className="absolute top-20 right-20 text-gray-800 text-2xl font-medium text-shadow-md p-2 rounded-lg"

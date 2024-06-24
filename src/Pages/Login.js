@@ -21,15 +21,15 @@ function Login({ setShowLogin }) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       const isAdmin = await checkAdminStatus(user.uid);
-    
+
       if (isAdmin) {
-       navigate('/admin')
+        navigate('/admin');
       } else {
-        navigate('/products')
+        navigate('/products');
       }
     } catch (error) {
       console.error("Error signing in:", error.message);
-
+      
     }
   };
   const checkAdminStatus = async (uid) => {
