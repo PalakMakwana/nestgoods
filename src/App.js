@@ -12,6 +12,7 @@ import './App.css';
 import Admin from './User/Admin';
 import ProductForm from './Components/ProductForm';
 import ProductCard from './Components/ProductCard';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Landing />} />
           <Route path='/login' element={<Login />} />
+
           <Route path='/register' element={<Register />} />
           <Route path='/header' element={<Header/>} />
           <Route path='/carousel' element={<Carousel/>} />
@@ -30,6 +32,7 @@ function App() {
           <Route path='/prductform' element={<ProductForm/>} />
           <Route path='/prductcard' element={<ProductCard/>} />
         </Routes>
+        <Toaster position="top-center" />
       </Router>
     </div>
   );
