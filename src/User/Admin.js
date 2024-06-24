@@ -2,6 +2,7 @@ import {useState} from 'react'
 import Sidebar from '../Components/Sidebar'
 import ProductForm from '../Components/ProductForm'
 import ProductCard from '../Components/ProductCard'
+import AddFarmerForm from '../Components/AddFarmerForm'
 function Admin() {
     const [dashboard , setDashboard]= useState(true)
     const [farmer , setFarmer]= useState(false)
@@ -83,7 +84,7 @@ function Admin() {
 
     </div>
 </div>)} 
-{farmer&&(<div>Farmer</div>)}
+{farmer&&(<div><AddFarmerForm/></div>)}
 {product&&(
    <>
     <div>

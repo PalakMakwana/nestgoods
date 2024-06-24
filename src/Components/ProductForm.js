@@ -1,125 +1,234 @@
-import React, { useState } from 'react';
-import ProductCard from './ProductCard';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+// import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, db, imagedb } from "../Firebase";
+import { v4 } from "uuid";
+// import { addDoc, collection, updateDoc, doc } from "firebase/firestore";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import Select from "react-select";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const ProductForm = () => {
-    const [image,setImage]=useState(null)
-  const [formData, setFormData] = useState({
-    image:'',
-    name: '',
-    category: '',
-    weight: '',
-    price: ''
+function ProductForm({ postId, values, handleClose }) {
+  const [imageUrl, setImageUrl] = useState("");
+  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUsername(storedUser);
+    } else {
+      setUsername("Unknown");
+    }
+  }, []);
+
+  const initialValues = {
+    category: values?.category || "",
+    item: values?.item || "",
+    date: new Date().toISOString().slice(0, 10),
+    description: values?.description || "",
+    weights: values?.weights || [],
+    price: values?.price || "",
+  };
+
+  const validationSchema = Yup.object().shape({
+    category: Yup.string().required("Category is required"),
+    item: Yup.string().required("Item is required"),
+    description: Yup.string().required("Description is required"),
+    weights: Yup.array().min(1, "Select at least one weight"),
+    price: Yup.number()
+      .required("Price is required")
+      .positive("Price must be positive"),
   });
 
-  const [products, setProducts] = useState([]);
+  // const handleUploadImage = (e) => {
+  //   const file = e.target.files[0];
 
-  const handleChange = (e) => {
-    if (e.target.name === 'image') {
-      setImage(e.target.files[0]); // Store the selected image file
-      setFormData({ ...formData, [e.target.name]: e.target.value });
-    } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+  //   if (file) {
+  //     const imageRef = ref(imagedb, `imgs/${v4()}`);
+
+  //     uploadBytes(imageRef, file).then((resp) => {
+  //       getDownloadURL(resp.ref).then((url) => {
+  //         setImageUrl(url);
+  //       });
+  //     });
+  //   }
+  // };
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    if (!imageUrl) {
+      alert("Please upload an image");
+      setSubmitting(false);
+      return;
     }
+
+    try {
+      const user = await auth.currentUser;
+      if (user) {
+        const data = {
+          ...values,
+          date: new Date().toISOString().slice(0, 10),
+          image: imageUrl,
+          uid: user.uid,
+          username: username,
+        };
+
+        if (postId) {
+          // await updateDoc(doc(db, "AddBlog", postId), data);
+          alert("Blog post updated successfully");
+        } else {
+          // await addDoc(collection(db, "AddBlog"), data);
+          alert("Blog post added successfully");
+        }
+
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to save changes");
+    }
+
+    setSubmitting(false);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    
-    const newProduct = {
-      ...formData,
-      image: image, 
-    };
-    
-    setProducts([...products, newProduct]);
-    setFormData({
-      image: '',
-      name: '',
-      category: '',
-      weight: '',
-      price: ''
-    });
-    setImage(null); 
-  };
+  const weightOptions = [
+    { value: "50gm", label: "50gm" },
+    { value: "100gm", label: "100gm" },
+    { value: "250gm", label: "250gm" },
+    { value: "500gm", label: "500gm" },
+    { value: "1kg", label: "1 kg" },
+    { value: "2kg", label: "2 kg" },
+    { value: "3kg", label: "3 kg" },
+    { value: "5kg", label: "5 kg" },
+    { value: "10kg", label: "10 kg" },
+  ];
 
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-5">Add New Product</h1>
-      <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-          <label className="block text-sm font-medium text-gray-700">Add Image</label>
-          <input
-            type="file"
-            name="image"
-            // value={formData.name}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            placeholder="Product Name"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            placeholder="Product Name"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Category</label>
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            placeholder="Product Category"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Weight (kg)</label>
-          <input
-            type="number"
-            name="weight"
-            value={formData.weight}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            placeholder="Weight in kg"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Price per kg</label>
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            placeholder="Price per kg"
-          />
-        </div>
-        <div>
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Submit
-          </button>
-        </div>
-      </form>
-      <div className="mt-10">
-        <h2 className="text-xl font-bold mb-5">Product List</h2>
-        <div className="space-y-5">
-          {products.map((product, index) => (
-            <ProductCard key={index} product={product} />
-          ))}
-        </div>
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <h1 className="text-3xl font-bold mb-4 text-gray-800 text-center">
+          Add Product Details
+        </h1>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting, setFieldValue }) => (
+            <Form className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="image" className="text-gray-700">
+                    Upload Image
+                  </label>
+                  <input
+                    id="image"
+                    name="image"
+                    type="file"
+                    className="input-field"
+                    onChange={(e) => {
+                      // handleUploadImage(e);
+                      setFieldValue("image", e.target.files[0]);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="category" className="text-gray-700">
+                    Select Category
+                  </label>
+                  <Field
+                    as="select"
+                    id="category"
+                    name="category"
+                    className="input-field"
+                  >
+                    <option value="">Select Category</option>
+                    <option value="food">Fruit</option>
+                    <option value="travel">Vegetables</option>
+                    <option value="tech">Pulses</option>
+                    <option value="tech">Cereals</option>
+                    <option value="tech">Dairy</option>
+                  </Field>
+                  <ErrorMessage
+                    name="category"
+                    component="div"
+                    className="text-red-600"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="item" className="text-gray-700">
+                    Item name
+                  </label>
+                  <Field
+                    type="text"
+                    id="item"
+                    name="item"
+                    className="input-field"
+                    placeholder="Item"
+                  />
+                  <ErrorMessage
+                    name="item"
+                    component="div"
+                    className="text-red-600"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="weights" className="text-gray-700">
+                    Product Weights
+                  </label>
+                  <Select
+                    id="weights"
+                    name="weights"
+                    options={weightOptions}
+                    isMulti
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    onChange={(selectedOptions) =>
+                      setFieldValue(
+                        "weights",
+                        selectedOptions.map((option) => option.value)
+                      )
+                    }
+                  />
+                  <ErrorMessage
+                    name="weights"
+                    component="div"
+                    className="text-red-600"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="price" className="text-gray-700">
+                    Price per 100 gram
+                  </label>
+                  <Field
+                    type="number"
+                    id="price"
+                    name="price"
+                    className="input-field"
+                    placeholder="Price"
+                  />
+                  <ErrorMessage
+                    name="price"
+                    component="div"
+                    className="text-red-600"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="btn-primary"
+              >
+                {postId ? "Update Product" : "Add Product"}
+              </button>
+            </Form>
+          )}
+        </Formik>
       </div>
     </div>
   );
-};
+}
 
 export default ProductForm;

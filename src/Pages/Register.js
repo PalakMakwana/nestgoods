@@ -1,4 +1,4 @@
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { getFirestore, collection, addDoc,setDoc, doc } from 'firebase/firestore';
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -29,7 +29,7 @@ const Register = ({ setShowLogin }) => {
       const user= userCredential.user;
 
       // const userId = uuidv4();
-
+await updateProfile(user, {displayName:values.username})
 
       await setDoc(doc(db, 'users',user.uid), {
         uid: user.uid,
@@ -37,7 +37,7 @@ const Register = ({ setShowLogin }) => {
         email: values.email,
         mobile: values.mobile,
       });
-
+localStorage.setItem("username",values.username)
 
 toast.success('register successfully')
       handleRegisterSuccess();
