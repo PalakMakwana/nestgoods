@@ -1,7 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Formik, Field, Form, FieldArray, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import { auth, db } from '../Firebase';
+import { addDoc, collection } from 'firebase/firestore';
+
+const validationSchema = Yup.object({
+  farmerName: Yup.string().required('Required'),
+  category: Yup.array().min(1, 'Select at least one category'),
+  mobileNo: Yup.string().required('Required'),
+  location: Yup.string().required('Required'),
+  landSize: Yup.string().required('Required'),
+  waterAvailability: Yup.string().required('Required'),
+  numCows: Yup.string().required('Required'),
+  landUtilization: Yup.string().required('Required'),
+  todoList: Yup.array().of(Yup.string().required('Required')),
+});
 
 const AddFarmerForm = () => {
-  const [formData, setFormData] = useState({
+  const initialValues = {
     farmerName: '',
     category: [],
     mobileNo: '',
@@ -10,114 +26,173 @@ const AddFarmerForm = () => {
     waterAvailability: '',
     numCows: '',
     landUtilization: '',
-    todoList: [],
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    todoList: [''],
   };
 
-  const handleCategoryChange = (e) => {
-    const { value, checked } = e.target;
-    if (checked) {
-      setFormData({
-        ...formData,
-        category: [...formData.category, value],
-      });
-    } else {
-      setFormData({
-        ...formData,
-        category: formData.category.filter((item) => item !== value),
-      });
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const docRef = await addDoc(collection(db, 'FarmerData'), values);
+        console.log('Document written with ID: ', docRef.id);
+        alert('Data added successfully');
+        resetForm();
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Error adding data');
     }
-  };
-
-  const handleTodoChange = (e, index) => {
-    const { value } = e.target;
-    const updatedTodoList = [...formData.todoList];
-    updatedTodoList[index] = value;
-    setFormData({
-      ...formData,
-      todoList: updatedTodoList,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission here, e.g., send data to backend
-    console.log(formData);
+    setSubmitting(false);
   };
 
   return (
-    <div className="container mx-auto  lg:w-[150%]   p-6 bg-white rounded-lg shadow-md">
+    <div className="container mx-auto lg:w-[150%] p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-3xl font-bold mb-6 text-center">Add Farmer</h2>
-      <form onSubmit={handleSubmit}>
-   <div className='flex justify-between'>
-   <div className="mb-4">
-          <label htmlFor="farmerName" className="block font-semibold mb-1">Farmer Name:</label>
-          <input type="text" id="farmerName" name="farmerName" value={formData.farmerName} onChange={handleInputChange} className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none" />
-        </div>
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">Category:</label>
-          <div className="flex flex-wrap gap-4">
-            <label htmlFor="category1" className="flex items-center space-x-2">
-              <input type="checkbox" id="category1" name="category" value="Vegetables" onChange={handleCategoryChange} className="form-checkbox" />
-              <span>Vegetables</span>
-            </label>
-            <label htmlFor="category2" className="flex items-center space-x-2">
-              <input type="checkbox" id="category2" name="category" value="Fruits" onChange={handleCategoryChange} className="form-checkbox" />
-              <span>Fruits</span>
-            </label>
-            <label htmlFor="category3" className="flex items-center space-x-2">
-              <input type="checkbox" id="category3" name="category" value="Grains" onChange={handleCategoryChange} className="form-checkbox" />
-              <span>Grains</span>
-            </label>
-          </div>
-        </div>
-   </div>
-    <div className='flex justify-between '>
-    <div className="mb-4">
-          <label htmlFor="mobileNo" className="block font-semibold mb-1">Mobile No:</label>
-          <input type="text" id="mobileNo" name="mobileNo" value={formData.mobileNo} onChange={handleInputChange} className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none" />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="location" className="block font-semibold mb-1">Location:</label>
-          <input type="text" id="location" name="location" value={formData.location} onChange={handleInputChange} className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none" />
-        </div>
-    </div>
-     <div className='flex justify-between'>
-     <div className="mb-4">
-          <label htmlFor="landSize" className="block font-semibold mb-1">Land Size:</label>
-          <input type="text" id="landSize" name="landSize" value={formData.landSize} onChange={handleInputChange} className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none" />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="waterAvailability" className="block font-semibold mb-1">Water Availability:</label>
-          <input type="text" id="waterAvailability" name="waterAvailability" value={formData.waterAvailability} onChange={handleInputChange} className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none" />
-        </div>
-     </div>
-        <div className='flex justify-between'>
-        <div className="mb-4">
-          <label htmlFor="numCows" className="block font-semibold mb-1">Number of Cows:</label>
-          <input type="text" id="numCows" name="numCows" value={formData.numCows} onChange={handleInputChange} className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none" />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="landUtilization" className="block font-semibold mb-1">Land Utilization:</label>
-          <input type="text" id="landUtilization" name="landUtilization" value={formData.landUtilization} onChange={handleInputChange} className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none" />
-        </div>
-        </div>
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">To-Do List:</label>
-          {formData.todoList.map((item, index) => (
-            <input key={index} type="text" value={item} onChange={(e) => handleTodoChange(e, index)} className="w-full border rounded-md px-3 py-2 mb-2 focus:ring focus:ring-blue-200 focus:outline-none" />
-          ))}
-          <button type="button" onClick={() => setFormData({ ...formData, todoList: [...formData.todoList, ''] })} className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">Add Item</button>
-        </div>
-        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Submit</button>
-      </form>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ values, isSubmitting }) => (
+          <Form>
+            <div className="flex justify-between">
+              <div className="mb-4">
+                <label htmlFor="farmerName" className="block font-semibold mb-1">Farmer Name:</label>
+                <Field
+                  type="text"
+                  id="farmerName"
+                  name="farmerName"
+                  className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none"
+                />
+                <ErrorMessage name="farmerName" component="div" className="text-red-500 text-sm" />
+              </div>
+              <div className="mb-4">
+                <label className="block font-semibold mb-1">Category:</label>
+                <div className="flex flex-wrap gap-4">
+                  {['Vegetables', 'Fruits', 'Grains'].map((category) => (
+                    <label key={category} className="flex items-center space-x-2">
+                      <Field
+                        type="checkbox"
+                        name="category"
+                        value={category}
+                        className="form-checkbox"
+                      />
+                      <span>{category}</span>
+                    </label>
+                  ))}
+                </div>
+                <ErrorMessage name="category" component="div" className="text-red-500 text-sm" />
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <div className="mb-4">
+                <label htmlFor="mobileNo" className="block font-semibold mb-1">Mobile No:</label>
+                <Field
+                  type="text"
+                  id="mobileNo"
+                  name="mobileNo"
+                  className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none"
+                />
+                <ErrorMessage name="mobileNo" component="div" className="text-red-500 text-sm" />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="location" className="block font-semibold mb-1">Location:</label>
+                <Field
+                  type="text"
+                  id="location"
+                  name="location"
+                  className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none"
+                />
+                <ErrorMessage name="location" component="div" className="text-red-500 text-sm" />
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <div className="mb-4">
+                <label htmlFor="landSize" className="block font-semibold mb-1">Land Size:</label>
+                <Field
+                  type="text"
+                  id="landSize"
+                  name="landSize"
+                  className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none"
+                />
+                <ErrorMessage name="landSize" component="div" className="text-red-500 text-sm" />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="waterAvailability" className="block font-semibold mb-1">Water Availability:</label>
+                <Field
+                  type="text"
+                  id="waterAvailability"
+                  name="waterAvailability"
+                  className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none"
+                />
+                <ErrorMessage name="waterAvailability" component="div" className="text-red-500 text-sm" />
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <div className="mb-4">
+                <label htmlFor="numCows" className="block font-semibold mb-1">Number of Cows:</label>
+                <Field
+                  type="text"
+                  id="numCows"
+                  name="numCows"
+                  className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none"
+                />
+                <ErrorMessage name="numCows" component="div" className="text-red-500 text-sm" />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="landUtilization" className="block font-semibold mb-1">Land Utilization:</label>
+                <Field
+                  type="text"
+                  id="landUtilization"
+                  name="landUtilization"
+                  className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none"
+                />
+                <ErrorMessage name="landUtilization" component="div" className="text-red-500 text-sm" />
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block font-semibold mb-1">To-Do List:</label>
+              <FieldArray name="todoList">
+                {({ push, remove }) => (
+                  <div>
+                    {values.todoList.map((item, index) => (
+                      <div key={index} className="flex items-center space-x-2 mb-2">
+                        <Field
+                          type="text"
+                          name={`todoList.${index}`}
+                          className="w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 focus:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
+                        >
+                          Remove
+                        </button>
+                        <ErrorMessage name={`todoList.${index}`} component="div" className="text-red-500 text-sm" />
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => push('')}
+                      className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                    >
+                      Add Item
+                    </button>
+                  </div>
+                )}
+              </FieldArray>
+            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+            >
+              Submit
+            </button>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };

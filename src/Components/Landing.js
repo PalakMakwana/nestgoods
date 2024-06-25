@@ -108,13 +108,13 @@ function Landing() {
            <div className="bg-green-700 p-1 rounded-full">
               <img src={image} alt="" className="h-10 w-10 rounded-full" />
             </div>
-            <p   style={{ fontFamily: "'Unbounded', sans-serif" }} className="text-green-800 font-bold">Prakrutik Aahar Kendra</p>
+            <p   style={{ fontFamily: "'Unbounded', sans-serif" }} className="text-green-800 text-base font-bold">Prakrutik Aahar Kendra</p>
            </div>
             <div className="hidden md:flex space-x-5">
               {menuItem.map((item, index) => (
                 <motion.li
                   key={item.id}
-                  className="nav-item list-none text-gray-800 hover:text-green-700 px-3 py-2 rounded-full transition duration-300 transform hover:scale-110 cursor-pointer"
+                  className="nav-item text-base list-none text-gray-800 hover:text-green-700 px-3 py-2 rounded-full transition duration-300 transform hover:scale-110 cursor-pointer"
                   onClick={() => handleMenuItemClick(item, index)}
                   whileHover={{ scale: 1.1 }}
                 >
