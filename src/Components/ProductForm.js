@@ -106,6 +106,7 @@ const ProductForm = () => {
                 onChange={(e)=>setImageUrl(e.target.files[0])}
               />
             </div>
+<div className="flex  space-x-4">
 <div className="flex flex-col">
                 <label htmlFor="category" className="mb-1">
                   Category
@@ -119,6 +120,7 @@ const ProductForm = () => {
                   onChange={(selectedOption) =>
                     setFieldValue("category", selectedOption.value)
                   }
+                  
                   value={categoryOptions.find(
                     (option) => option.value === values.category
                   )}
@@ -142,6 +144,7 @@ const ProductForm = () => {
               />
             </div>
 
+</div>
             <div className="flex flex-col">
                 <label htmlFor="weight" className="mb-1">
                   Weight

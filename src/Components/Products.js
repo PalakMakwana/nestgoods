@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import image from "../images/Green Vintage Illustrative Food Logo (2).png";
+import Productfromdata from '../Components/Productfromdata'
 import {
   UilShoppingCart,
   UilSearch,
   UilArrowCircleDown,
 } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
+
 import {
   UilBars,
   UilTimes,
@@ -288,26 +290,9 @@ function Products() {
             ))}
           </motion.div>
           {showFruits && (
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mt-5"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: {
-                  opacity: 0,
-                  scale: 0.8,
-                },
-                visible: {
-                  opacity: 1,
-                  scale: 1,
-                  transition: {
-                    delay: 0.3,
-                    staggerChildren: 0.1,
-                  },
-                },
-              }}
-            >
-   </motion.div>
+            <>
+<Productfromdata/>
+            </>
           )}
 </div>
 <div>
