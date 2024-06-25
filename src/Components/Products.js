@@ -314,7 +314,6 @@ function Products() {
   <button className="absolute bottom-[35%] bg-amber-500 text-sm w-52  text-white left-[44%] h-10 p-1 rounded">Shop Now</button>
 </div>
 
-  {/* <img src="https://img.freepik.com/premium-photo/mixed-various-spices-white-background_693630-3582.jpg?w=900"/> */}
 </div>
         </main>
       </div>
