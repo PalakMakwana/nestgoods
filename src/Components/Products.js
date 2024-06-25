@@ -307,7 +307,7 @@ function Products() {
     transition={{ duration: 0.5 }}
   />
   <div className="absolute inset-0 bg-black opacity-50"></div>
-  
+
   <div className="absolute inset-2  border-2 border-white opacity-50"></div>
   
   <p className="absolute top-[40%] text-4xl text-white font-bold left-[35%] "   style={{ fontFamily: "'Playwrite NL', sans-serif" }}>Spices and Seasonings </p>
