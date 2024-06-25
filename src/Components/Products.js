@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import image from "../images/Green Vintage Illustrative Food Logo (2).png";
+import Productfromdata from '../Components/Productfromdata'
 import {
   UilShoppingCart,
   UilSearch,
   UilArrowCircleDown,
 } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
+
 import {
   UilBars,
   UilTimes,
@@ -288,26 +290,9 @@ function Products() {
             ))}
           </motion.div>
           {showFruits && (
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mt-5"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: {
-                  opacity: 0,
-                  scale: 0.8,
-                },
-                visible: {
-                  opacity: 1,
-                  scale: 1,
-                  transition: {
-                    delay: 0.3,
-                    staggerChildren: 0.1,
-                  },
-                },
-              }}
-            >
-   </motion.div>
+            <>
+<Productfromdata/>
+            </>
           )}
 </div>
 <div>
@@ -322,14 +307,13 @@ function Products() {
     transition={{ duration: 0.5 }}
   />
   <div className="absolute inset-0 bg-black opacity-50"></div>
-  
+
   <div className="absolute inset-2  border-2 border-white opacity-50"></div>
   
   <p className="absolute top-[40%] text-4xl text-white font-bold left-[35%] "   style={{ fontFamily: "'Playwrite NL', sans-serif" }}>Spices and Seasonings </p>
   <button className="absolute bottom-[35%] bg-amber-500 text-sm w-52  text-white left-[44%] h-10 p-1 rounded">Shop Now</button>
 </div>
 
-  {/* <img src="https://img.freepik.com/premium-photo/mixed-various-spices-white-background_693630-3582.jpg?w=900"/> */}
 </div>
         </main>
       </div>
