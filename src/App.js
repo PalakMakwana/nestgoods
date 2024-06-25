@@ -11,7 +11,7 @@ import Sidebar from './Components/Sidebar';
 import './App.css';
 import Admin from './User/Admin';
 import ProductForm from './Components/ProductForm';
-import ProductCard from './Components/ProductCard';
+// import ProductCard from './Components/ProductCard';/
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
           <Route path='/admin' element={<Admin/>} />
           <Route path='/sidebar' element={<Sidebar/>} />
           <Route path='/prductform' element={<ProductForm/>} />
-          <Route path='/prductcard' element={<ProductCard/>} />
+          {/* <Route path='/prductcard' element={<ProductCard/>} /> */}
         </Routes>
         <Toaster position="top-center" />
       </Router>

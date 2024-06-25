@@ -49,42 +49,7 @@ function Products() {
     },
   ];
 
-  const fruitsData = [
-    {
-      id: 6,
-      name: "Apple",
-      price: "₹100",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfarAFccmDz22ZlfrL_vWW9Rxja-7INLgIRA&s",
-    },
-    {
-      id: 7,
-      name: "Banana",
-      price: "₹40",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUuHf-LGcZqm_Ng49fzikvHv9rsVkZf_RwVA&s",
-    },
-    {
-      id: 8,
-      name: "Orange",
-      price: "₹60",
-      image: "https://thumbs.dreamstime.com/b/orange-fruit-22884921.jpg",
-    },
-    {
-      id: 9,
-      name: "Strawberry",
-      price: "₹150",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0jhk3RrJf41vXSesb6BifvV5OEsp-hQSxaQ&s",
-    },
-    {
-      id: 10,
-      name: "Grapes",
-      price: "₹90",
-      image:
-        "https://rukminim2.flixcart.com/image/850/1000/kt0enww0/plant-seed/h/h/n/25-dg-214-paudha-original-imag6fgvre6bmd5y.jpeg?q=90&crop=false",
-    },
-  ];
+
 
   const [showFruits, setShowFruits] = useState(false);
 
@@ -146,7 +111,7 @@ function Products() {
         </nav>
       </header>
       <div className="flex">
-        {/* <motion.aside 
+        {/* <motion.aside
           className="w-64 p-5 border-r bg-white shadow-md"
           initial={{ x: -200 }}
           animate={{ x: 0 }}
@@ -342,28 +307,7 @@ function Products() {
                 },
               }}
             >
-              {fruitsData.map((fruit) => (
-                <motion.div
-                  key={fruit.id}
-                  className="border p-1 rounded-md shadow-sm hover:shadow-lg transition-shadow duration-300"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <div className="relative h-56">
-                    <img
-                      src={fruit.image}
-                      alt={fruit.name}
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-lg font-medium">{fruit.name}</h3>
-                    <p className="text-green-700 font-semibold">
-                      {fruit.price}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+   </motion.div>
           )}
 </div>
 <div>

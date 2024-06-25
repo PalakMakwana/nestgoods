@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ProductForm from "./ProductForm";
-import ProductCard from "./ProductCard";
+
 
 function Dashboard() {
   const [products, setProducts] = useState([]);
@@ -12,11 +12,7 @@ function Dashboard() {
   return (
     <div className="dashboard">
       <ProductForm addProduct={addProduct} />
-      <div className="product-list">
-        {products.map((product, index) => (
-          <ProductCard key={index} product={product} />
-        ))}
-      </div>
+      
     </div>
   );
 }
