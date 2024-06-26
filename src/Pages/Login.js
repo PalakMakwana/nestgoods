@@ -29,7 +29,7 @@ function Login({ setShowLogin }) {
       }
     } catch (error) {
       console.error("Error signing in:", error.message);
-      
+
     }
   };
   const checkAdminStatus = async (uid) => {
@@ -39,12 +39,12 @@ function Login({ setShowLogin }) {
         const userData = docSnapshot.data();
         return userData.roles === 'admin';
       } else {
-        // User profile document does not exist
+
         return false;
       }
     } catch (error) {
       console.error('Error checking admin status:', error);
-      // Default to false if there's an error
+
       return false;
     }
   };
@@ -52,8 +52,8 @@ function Login({ setShowLogin }) {
 
   return (
     <div>
-      <div className="contain py-16">
-        <div className="max-w-lg mx-auto shadow px-6 py-7 rounded overflow-hidden">
+      <div className="contain py-16 bg-cover " style={{backgroundImage:"url('https://img.freepik.com/free-photo/top-view-copy-space-grapefruit-with-oranges-lemons-basket-white-background_141793-49666.jpg?w=740&t=st=1719377311~exp=1719377911~hmac=c68395f102a6ac8684030563113fbb136be3a054692f83c2a6fe0260844b9ca8')", }}>
+        <div className="max-w-lg mx-auto bg-white shadow px-6 py-7 rounded overflow-hidden">
           <h2 className="text-2xl uppercase font-medium mb-1">Login</h2>
           <p className="text-gray-600 mb-6 text-sm">Welcome! So good to have you back!</p>
           <Formik
@@ -68,7 +68,7 @@ function Login({ setShowLogin }) {
                   <Field
                     name="email"
                     type="email"
-                    className="block w-full border border-gray-300 px-4 py-3 text-gray-600 text-sm rounded focus:ring-0 focus:border-teal-500 placeholder-gray-400"
+                    className="block w-full border-2 border-gray-700 px-4 py-3 text-gray-600 text-sm rounded focus:ring-0 focus:border-teal-500 placeholder-gray-400"
                     placeholder="youremail@domain.com"
                   />
                   <ErrorMessage name="email" component="div" className="text-red-500 text-sm" />
@@ -81,7 +81,7 @@ function Login({ setShowLogin }) {
                     <Field
                       name="password"
                       type="password"
-                      className="block w-full border border-gray-300 px-4 py-3 text-gray-600 text-sm rounded focus:ring-0 focus:border-teal-500 placeholder-gray-400"
+                      className="block w-full border-2 border-gray-700 px-4 py-3 text-gray-600 text-sm rounded focus:ring-0 focus:border-teal-500 placeholder-gray-400"
                       placeholder="***********"
                     />
                     <ErrorMessage name="password" component="div" className="text-red-500 text-sm" />
@@ -95,7 +95,7 @@ function Login({ setShowLogin }) {
                 </div>
               </div>
               <div className="mt-4">
-                <button type="submit" className="block w-full py-2 text-center text-white bg-green-700 border border-teal-500 rounded hover:bg-transparent hover:text-teal-500 transition uppercase font-roboto font-medium">
+                <button type="submit" className="block w-full py-2 text-center text-white bg-green-700 border border-teal-500 rounded hover:bg-green-600 hover:text-black transition uppercase font-roboto font-medium">
                   Login
                 </button>
                 <div className="flex gap-2 pt-5">

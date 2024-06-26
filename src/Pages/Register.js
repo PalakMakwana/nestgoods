@@ -50,12 +50,13 @@ toast.success('register successfully')
   };
 
   return (
-    <div className="h-full">
+    <div className="h-full bg-cover " style={{backgroundImage:"url('https://img.freepik.com/free-photo/top-view-copy-space-grapefruit-with-oranges-lemons-basket-white-background_141793-49666.jpg?w=740&t=st=1719377311~exp=1719377911~hmac=c68395f102a6ac8684030563113fbb136be3a054692f83c2a6fe0260844b9ca8')", }}>
+  {/* <div className="absolute inset-0 bg-black opacity-8"></div> */}
       <div className="mx-auto">
-        <div className="flex justify-center px-6">
-          <div className="w-full xl:w-3/4 lg:w-11/12 flex">
-            <div className="w-full p-5 rounded-lg lg:rounded-l-none">
-              <h3 className="py-4 text-2xl text-center">Create an Account!</h3>
+        <div className="flex  justify-center px-6">
+          <div className="w-full xl:w-3/4  lg:w-11/12 flex">
+            <div className="w-full  bg-white rounded-lg lg:rounded-l-none">
+              <h3 className="py-2 text-2xl text-center">Create an Account!</h3>
               <Formik
                 initialValues={{
                   username: '',
@@ -67,7 +68,7 @@ toast.success('register successfully')
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
               >
-                <Form className="px-8 pt-6 pb-8 mb-4 shadow-lg rounded">
+                <Form className="px-8 pt-2 pb-8 mb-4 shadow-lg rounded">
                   <div className="mb-4 md:flex md:justify-between">
                     <div className="mb-4 md:mr-2 md:mb-0">
                       <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="username">
@@ -76,7 +77,7 @@ toast.success('register successfully')
                       <Field
                         name="username"
                         type="text"
-                        className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                        className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border-2 border-gray-700 rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                         placeholder="Username"
                       />
                       <ErrorMessage name="username" component="div" className="text-xs italic text-red-500" />
@@ -88,7 +89,7 @@ toast.success('register successfully')
                       <Field
                         name="mobile"
                         type="text"
-                        className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                        className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border-2 border-gray-700 rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                         placeholder="Mobile"
                       />
                       <ErrorMessage name="mobile" component="div" className="text-xs italic text-red-500" />
@@ -101,7 +102,7 @@ toast.success('register successfully')
                     <Field
                       name="email"
                       type="email"
-                      className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                      className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border-2 border-gray-700 rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                       placeholder="Email"
                     />
                     <ErrorMessage name="email" component="div" className="text-xs italic text-red-500" />
@@ -114,7 +115,7 @@ toast.success('register successfully')
                       <Field
                         name="pass"
                         type="password"
-                        className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border border-red-500 rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                        className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border-2 border-gray-700 rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                         placeholder="******************"
                       />
                       <ErrorMessage name="pass" component="div" className="text-xs italic text-red-500" />
@@ -126,7 +127,7 @@ toast.success('register successfully')
                       <Field
                         name="confpass"
                         type="password"
-                        className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                        className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border-gray-700 border-2 rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                         placeholder="******************"
                       />
                       <ErrorMessage name="confpass" component="div" className="text-xs italic text-red-500" />
@@ -135,7 +136,7 @@ toast.success('register successfully')
                   <div className="mb-6 text-center">
                     <button
                       type="submit"
-                      className="w-full px-4 py-2 font-bold text-white bg-green-700 rounded-full hover:bg-green-500 focus:outline-none focus:shadow-outline"
+                      className="w-full px-4 py-2 font-bold text-white bg-green-700 rounded-md hover:bg-green-600 focus:outline-none focus:shadow-outline"
                     >
                       Register Account
                     </button>
@@ -143,7 +144,7 @@ toast.success('register successfully')
                   <hr className="mb-6 border-t" />
                   <div className="text-center">
                     <a href="#" onClick={() => setShowLogin(true)} className="">
-                      Already have an account? <span className="text-green-700">Login!</span>
+                      Already have an account? <span className="text-green-700 hover:text-blue-700">Login!</span>
                     </a>
                   </div>
                 </Form>
