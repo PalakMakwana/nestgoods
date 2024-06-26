@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import image from "../images/Green Vintage Illustrative Food Logo (2).png";
-import Productfromdata from '../Components/Productfromdata'
+import Productfromdata from "../Components/Productfromdata";
 import {
   UilShoppingCart,
   UilSearch,
@@ -51,8 +51,6 @@ function Products() {
     },
   ];
 
-
-
   const [showFruits, setShowFruits] = useState(false);
 
   const handleShopNow = (category) => {
@@ -62,7 +60,7 @@ function Products() {
       setShowFruits(false);
     }
   };
-  const userName = JSON.parse(localStorage.getItem('user'));
+  const userName = JSON.parse(localStorage.getItem("user"));
   const [range, setRange] = useState(50);
   const handleRange = (e) => {
     setRange(e.target.value);
@@ -72,26 +70,34 @@ function Products() {
     <div className="bg-gray-50 min-h-screen">
       <header className="bg-white shadow-md sticky top-0 z-50">
         <nav className="flex justify-between p-5">
-         <div className="flex justify-evenly space-x-2">
-         <motion.div
-            className="bg-green-700 p-1 rounded-full cursor-pointer"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <img
-              onClick={() => navigate("/")}
-              src={image}
-              alt="Logo"
-              className="h-10 w-10 rounded-full"
-            />
-            
-          </motion.div>
-          <p   style={{ fontFamily: "'Unbounded', sans-serif" }} className="text-green-800 text-2xl mt-2   items-center  font-bold">Prakrutik Aahar Kendra</p>
+          <div className="flex justify-evenly space-x-2">
+            <motion.div
+              className="bg-green-700 p-1 rounded-full cursor-pointer"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <img
+                onClick={() => navigate("/")}
+                src={image}
+                alt="Logo"
+                className="h-10 w-10 rounded-full"
+              />
+            </motion.div>
+            <p
+              style={{ fontFamily: "'Unbounded', sans-serif" }}
+              className="text-green-800 text-2xl mt-2   items-center  font-bold"
+            >
+              Prakrutik Aahar Kendra
+            </p>
+            {userName && (
+              <div className="flex  items-center mt-2">
+                <h2 className=" text-black mr-96">Welcome, {userName}!</h2>
+              </div>
+            )}
+          </div>
 
-         </div>
-
-                   <motion.div
+          <motion.div
             className="flex space-x-4 items-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -159,12 +165,6 @@ function Products() {
               style={{ fontFamily: "'Unbounded', sans-serif" }}
             >
               Grocery & Herbs
-              {userName && (
-                        <div className="flex  items-center mt-2">
-                            <h2 className=" mr-96">Welcome, {userName}!</h2>
-
-                        </div>
-                    )}
             </motion.p>
             <motion.p
               className="absolute top-20 right-20 text-gray-800 text-2xl font-medium text-shadow-md p-2 rounded-lg"
@@ -184,7 +184,6 @@ function Products() {
             >
               <p className="text-justify">Discover the Pure Organic Shop</p>
             </motion.p>
-
 
             <motion.p
               className="absolute bottom-24 right-20 text-xl bg-green-700 rounded-lg text-white p-1 flex items-center cursor-pointer"
@@ -195,8 +194,8 @@ function Products() {
             >
               Shop Now <UilArrowCircleDown className="ml-2" />
             </motion.p>
-            
-          <motion.p
+
+            <motion.p
               className=" absolute top-[86%] w-full"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -204,117 +203,82 @@ function Products() {
               onClick={() => navigate("/shop")}
             >
               <>
-              <div className="px-10 ml-10 mr-10 rounded-md   shadow-lg bg-white py-14 flex justify-evenly">
-              <div className="">
-                <UilShoppingBag className="ml-10  bg-[#96dc39]  rounded-md" />
-                <p className=""> Free Shipping</p>
-              </div>
-              <div>
-                <UilTrees className="ml-10 bg-[#FF8E8F] rounded-md" />
-                <p>100% Natural </p>
-              </div>
-              <div>
-                <UilTruck className="ml-10 bg-[#FFDE95] rounded-md" />
-                <p>Fast Delivery</p>
-              </div>
-              <div>
-                <img
-                  src="https://cdn-icons-png.freepik.com/256/5928/5928557.png?ga=GA1.1.2096347703.1710152248"
-                  alt=""
-                  className="h-6 w-6 ml-16 bg-emerald-300 rounded-md"
-                />
-                <p>Curated Products </p>
-              </div>
-            </div>
-</>
+                <div className="px-10 ml-10 mr-10 rounded-md   shadow-lg bg-white py-14 flex justify-evenly">
+                  <div className="">
+                    <UilShoppingBag className="ml-10  bg-[#96dc39]  rounded-md" />
+                    <p className=""> Free Shipping</p>
+                  </div>
+                  <div>
+                    <UilTrees className="ml-10 bg-[#FF8E8F] rounded-md" />
+                    <p>100% Natural </p>
+                  </div>
+                  <div>
+                    <UilTruck className="ml-10 bg-[#FFDE95] rounded-md" />
+                    <p>Fast Delivery</p>
+                  </div>
+                  <div>
+                    <img
+                      src="https://cdn-icons-png.freepik.com/256/5928/5928557.png?ga=GA1.1.2096347703.1710152248"
+                      alt=""
+                      className="h-6 w-6 ml-16 bg-emerald-300 rounded-md"
+                    />
+                    <p>Curated Products </p>
+                  </div>
+                </div>
+              </>
             </motion.p>
-
           </div>
 
-
-          
-<div className="py-32">
-  
-<h1 className="text-2xl font-semibold mb-5">Products</h1>
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5"
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: {
-                opacity: 0,
-                scale: 0.8,
-              },
-              visible: {
-                opacity: 1,
-                scale: 1,
-                transition: {
-                  delay: 0.3,
-                  staggerChildren: 0.1,
+          <div className="py-32">
+            <h1 className="text-2xl font-semibold mb-5">Products</h1>
+            <motion.div
+              className=""
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {
+                  opacity: 0,
+                  scale: 0.8,
                 },
-              },
-            }}
-          >
-            {productsData.map((product) => (
-              <motion.div
-                key={product.id}
-                className="border p-1 rounded-md shadow-sm hover:shadow-lg transition-shadow duration-300"
-                whileHover={{ scale: 1.05 }}
+                visible: {
+                  opacity: 1,
+                  scale: 1,
+                  transition: {
+                    delay: 0.3,
+                    staggerChildren: 0.1,
+                  },
+                },
+              }}
+            >
+              <Productfromdata showActions={false} />
+            </motion.div>
+          </div>
+          <div>
+            <div></div>
+            <div className="relative h-[400px] w-full  overflow-hidden">
+              <motion.img
+                className="h-full w-full object-cover"
+                src="https://img.freepik.com/premium-photo/mixed-various-spices-white-background_693630-3582.jpg?w=900"
+                alt="Banner"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.5 }}
+              />
+              <div className="absolute inset-0 bg-black opacity-50"></div>
+
+              <div className="absolute inset-2  border-2 border-white opacity-50"></div>
+
+              <p
+                className="absolute top-[40%] text-4xl text-white font-bold left-[35%] "
+                style={{ fontFamily: "'Playwrite NL', sans-serif" }}
               >
-                <a
-                  onClick={() => handleShopNow(product.name)}
-                  className="group relative block cursor-pointer"
-                >
-                  <div className="relative h-64">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="absolute inset-0 h-full w-full object-cover opacity-100 group-hover:opacity-0 transition-opacity duration-300"
-                    />
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="absolute inset-0 h-full w-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    />
-                  </div>
-                  <div className="absolute inset-0 flex flex-col items-start justify-end p-6 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <h3 className="text-xl font-medium text-white">
-                      {product.name}
-                    </h3>
-                    <span className="mt-3 inline-block bg-white text-black px-5 py-2 text-xs font-medium uppercase tracking-wide">
-                      Shop Now
-                    </span>
-                  </div>
-                </a>
-              </motion.div>
-            ))}
-          </motion.div>
-          {showFruits && (
-            <>
-<Productfromdata/>
-            </>
-          )}
-</div>
-<div>
-  <div></div>
-<div className="relative h-[400px] w-full  overflow-hidden">
-  <motion.img
-    className="h-full w-full object-cover"
-    src="https://img.freepik.com/premium-photo/mixed-various-spices-white-background_693630-3582.jpg?w=900"
-    alt="Banner"
-    initial={{ scale: 0.8 }}
-    animate={{ scale: 1 }}
-    transition={{ duration: 0.5 }}
-  />
-  <div className="absolute inset-0 bg-black opacity-50"></div>
-
-  <div className="absolute inset-2  border-2 border-white opacity-50"></div>
-  
-  <p className="absolute top-[40%] text-4xl text-white font-bold left-[35%] "   style={{ fontFamily: "'Playwrite NL', sans-serif" }}>Spices and Seasonings </p>
-  <button className="absolute bottom-[35%] bg-amber-500 text-sm w-52  text-white left-[44%] h-10 p-1 rounded">Shop Now</button>
-</div>
-
-</div>
+                Spices and Seasonings{" "}
+              </p>
+              <button className="absolute bottom-[35%] bg-amber-500 text-sm w-52  text-white left-[44%] h-10 p-1 rounded">
+                Shop Now
+              </button>
+            </div>
+          </div>
         </main>
       </div>
     </div>
