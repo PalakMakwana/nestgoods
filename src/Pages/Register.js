@@ -1,19 +1,15 @@
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { getFirestore,setDoc, doc } from 'firebase/firestore';
+import { getFirestore, setDoc, doc } from 'firebase/firestore';
 import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import Firebase from '../Firebase';
-import toast from 'react-hot-toast'
+import toast from 'react-hot-toast';
 const Register = ({ setShowLogin }) => {
   const auth = getAuth();
   const db = getFirestore();
-
   const handleRegisterSuccess = () => {
     setShowLogin(true);
   };
-
   const validationSchema = Yup.object({
     username: Yup.string().required('Required'),
     email: Yup.string().email('Invalid email address').required('Required'),
@@ -21,41 +17,33 @@ const Register = ({ setShowLogin }) => {
     pass: Yup.string().min(6, 'Password must be at least 6 characters').required('Required'),
     confpass: Yup.string().oneOf([Yup.ref('pass'), null], 'Passwords must match').required('Required'),
   });
-
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.pass);
-      // const user = auth.currentUser;
-      const user= userCredential.user;
-
-      // const userId = uuidv4();
-await updateProfile(user, {displayName:values.username})
-
-      await setDoc(doc(db, 'users',user.uid), {
+      const user = userCredential.user;
+      await updateProfile(user, { displayName: values.username });
+      await setDoc(doc(db, 'users', user.uid), {
         uid: user.uid,
         username: values.username,
         email: values.email,
         mobile: values.mobile,
       });
-localStorage.setItem("username",values.username)
-
-toast.success('register successfully')
+      localStorage.setItem("username", JSON.stringify(values.username));
+      toast.success('Register successfully');
       handleRegisterSuccess();
     } catch (error) {
       console.error('Error registering user:', error);
-      toast.error(error.message)
+      toast.error(error.message);
     } finally {
       setSubmitting(false);
     }
   };
-
   return (
-    <div className="h-full bg-cover " style={{backgroundImage:"url('https://img.freepik.com/free-photo/top-view-copy-space-grapefruit-with-oranges-lemons-basket-white-background_141793-49666.jpg?w=740&t=st=1719377311~exp=1719377911~hmac=c68395f102a6ac8684030563113fbb136be3a054692f83c2a6fe0260844b9ca8')", }}>
-  {/* <div className="absolute inset-0 bg-black opacity-8"></div> */}
+    <div className="h-full bg-cover" style={{ backgroundImage: "url('https://img.freepik.com/free-photo/top-view-copy-space-grapefruit-with-oranges-lemons-basket-white-background_141793-49666.jpg?w=740&t=st=1719377311~exp=1719377911~hmac=c68395f102a6ac8684030563113fbb136be3a054692f83c2a6fe0260844b9ca8')" }}>
       <div className="mx-auto">
-        <div className="flex  justify-center px-6">
-          <div className="w-full xl:w-3/4  lg:w-11/12 flex">
-            <div className="w-full  bg-white rounded-lg lg:rounded-l-none">
+        <div className="flex justify-center px-6">
+          <div className="w-full xl:w-3/4 lg:w-11/12 flex">
+            <div className="w-full bg-white rounded-lg lg:rounded-l-none">
               <h3 className="py-2 text-2xl text-center">Create an Account!</h3>
               <Formik
                 initialValues={{
@@ -156,5 +144,4 @@ toast.success('register successfully')
     </div>
   );
 };
-
 export default Register;

@@ -13,10 +13,14 @@ import Admin from './User/Admin';
 import ProductForm from './Components/ProductForm';
 // import ProductCard from './Components/ProductCard';/
 import { Toaster } from 'react-hot-toast';
-
+import { CartProvider } from './Components/CartContext';
+import { AuthProvider } from './Components/AuthContext';
 function App() {
   return (
     <div>
+
+<AuthProvider>
+<CartProvider>
       <Router>
         <Routes>
           <Route path='/' element={<Landing />} />
@@ -34,6 +38,8 @@ function App() {
         </Routes>
         <Toaster position="top-center" />
       </Router>
+      </CartProvider>
+      </AuthProvider>
     </div>
   );
 }
