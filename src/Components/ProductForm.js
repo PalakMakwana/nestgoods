@@ -1,56 +1,56 @@
-import { useState } from "react";
-import { Formik, Field, Form, ErrorMessage, useField } from "formik";
+import React, { useState } from "react";
+import { Formik, Field, Form, ErrorMessage, FieldArray } from "formik";
 import * as Yup from "yup";
-import { auth, db, imagedb } from "../Firebase";
-import { v4 } from "uuid";
-import { addDoc, collection, updateDoc } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 import Select from "react-select";
+import { v4 as uuidv4, v4 } from 'uuid';
+import { db } from "../Firebase";
 
-const validationSchema = Yup.object({
+const validationSchema = Yup.object().shape({
   ItemName: Yup.string().required("Item Name is required"),
-  weight: Yup.array().of(Yup.string()).required("Weight is required"),
-  price: Yup.number().required("Price is required"),
+  weightAndPrice: Yup.array()
+    .of(
+      Yup.object().shape({
+        weight: Yup.string().required("Weight is required"),
+        price: Yup.number().required("Price is required"),
+      })
+    )
+    .min(1, "At least one weight and price pair must be specified"),
+  category: Yup.string().required("Category is required"),
 });
 
-const ProductForm = ({ initialValues = {}, handleSave, isEdit,handleCloseModal }) => {
-  const [imageUrl, setImageUrl] = useState(initialValues.image || "");
-  const [priceMap, setPriceMap] = useState({
-    "50g": 10,
-    "250g": 50,
-    "500g": 100,
-    "1kg": 300,
-    "2kg": 500,
-    "3kg": 700,
-    "5kg": 800,
-    "10kg": 1000,
-  });
+const categoryOptions = [
+  { value: "fruits", label: "Fruits" },
+  { value: "vegetables", label: "Vegetables" },
+  { value: "cereals", label: "Cereals" },
+  { value: "pulses", label: "Pulses" },
+  { value: "dairy", label: "Dairy" },
+];
 
-  const categoryOptions = [
-    { value: "fruits", label: "Fruits" },
-    { value: "vegetables", label: "Vegetables" },
-    { value: "cereals", label: "Cereals" },
-    { value: "pulses", label: "Pulses" },
-    { value: "dairy", label: "Dairy" },
-  ];
+const ProductForm = ({
+  initialValues = {},
+  handleSave,
+  isEdit,
+  handleCloseModal,
+}) => {
+  const [imageUrl, setImageUrl] = useState(initialValues.image || "");
+  const [weightAndPrice, setWeightAndPrice] = useState(
+    initialValues.weightAndPrice || [{ weight: "", price: "" }]
+  );
 
   const defaultValues = {
     ItemName: "",
-    weight: [],
-    price: "",
+    weightAndPrice: [],
     category: "",
     image: "",
   };
 
-  const formInitialValues = {
-    ...defaultValues,
-    ...initialValues,
-    weight: Array.isArray(initialValues.weight) ? initialValues.weight : [],
-  };
+
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      let updatedValues = { ...values };
+      let updatedValues = { ...values, weightAndPrice };
 
       if (imageUrl && imageUrl !== initialValues.image) {
         const urlimg = await handleUploadImage(imageUrl);
@@ -63,16 +63,18 @@ const ProductForm = ({ initialValues = {}, handleSave, isEdit,handleCloseModal }
         updatedValues.id = initialValues.id;
         await handleSave(updatedValues);
       } else {
-        await addDoc(collection(db, "ProductData"), updatedValues);
-        alert("Product added successfully");
+        await addDoc(collection(db, 'ProductData'), updatedValues);
+        alert('Product added successfully');
         resetForm();
-        setImageUrl("");
+        setImageUrl('');
+        setWeightAndPrice([{ id: uuidv4(), weight: '', price: '' }]);
       }
+
       handleCloseModal();
     } catch (error) {
-      // console.error("Error saving product: ", error);
-      alert("Error saving product");
+      alert('Error saving product');
     }
+
     setSubmitting(false);
   };
 
@@ -89,17 +91,25 @@ const ProductForm = ({ initialValues = {}, handleSave, isEdit,handleCloseModal }
     setImageUrl(file);
   };
 
-  const handleWeightChange = (selectedOptions, setFieldValue) => {
-    const selectedWeights = selectedOptions.map((option) => option.value);
-
-    const selectedWeight = selectedWeights[0];
-    const selectedPrice = priceMap[selectedWeight];
-    setFieldValue("price", selectedPrice);
+  const handleWeightAndPriceChange = (index, field, value) => {
+    const newWeightAndPrice = [...weightAndPrice];
+    newWeightAndPrice[index][field] = value;
+    setWeightAndPrice(newWeightAndPrice);
   };
+
+  const addWeightAndPrice = () => {
+    setWeightAndPrice([...weightAndPrice, { id: uuidv4(), weight: '', price: '' }]);
+  };
+
+  const removeWeightAndPrice = (index) => {
+    const newWeightAndPrice = weightAndPrice.filter((_, i) => i !== index);
+    setWeightAndPrice(newWeightAndPrice);
+  };
+
 
   return (
     <Formik
-      initialValues={formInitialValues}
+      initialValues={defaultValues}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       enableReinitialize
@@ -107,7 +117,9 @@ const ProductForm = ({ initialValues = {}, handleSave, isEdit,handleCloseModal }
       {({ setFieldValue, isSubmitting, values }) => (
         <Form className="space-y-4">
           <div>
-            <label className="block text-gray-700 font-bold mb-2">Item Name</label>
+            <label className="block text-gray-700 font-bold mb-2">
+              Item Name
+            </label>
             <Field
               name="ItemName"
               type="text"
@@ -120,61 +132,52 @@ const ProductForm = ({ initialValues = {}, handleSave, isEdit,handleCloseModal }
             />
           </div>
 
+          <FieldArray name="weightAndPrice">
+            {({ push }) => (
+              <div className="mt-2 sm:mt-4">
+                <label className="block mb-2 text-sm text-gray-600">Weight and Price</label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    push({ id: uuidv4(), weight: '', price: '' });
+                  }}
+                  className="bg-[#F58634] p-2 text-lg text-[#FBFFFF] rounded-full"
+                >
+                  Add Weight & Price
+                </button>
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 mt-2 sm:mt-4">
+                  {values.weightAndPrice.map((detail, index) => (
+                    <React.Fragment key={detail.id}>
+                      <Field
+                        name={`weightAndPrice[${index}].weight`}
+                        type="text"
+                        placeholder="Weight"
+                        className="border-2 border-gray-700 rounded-md p-1"
+                      />
+                      <Field
+                        name={`weightAndPrice[${index}].price`}
+                        type="text"
+                        placeholder="Price"
+                        className="border-2 border-gray-700 rounded-md p-1"
+                      />
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+            )}
+          </FieldArray>
           <div>
-            <label className="block text-gray-700  font-bold mb-2">Weight</label>
-            <Select
-              name="weight"
-              options={[
-                { value: "50g", label: "50g" },
-                { value: "100g", label: "100g" },
-                { value: "250g", label: "250g" },
-                { value: "500g", label: "500g" },
-                { value: "1kg", label: "1kg" },
-                { value: "2kg", label: "2kg" },
-                { value: "3kg", label: "3kg" },
-                { value: "5kg", label: "5kg" },
-                { value: "10kg", label: "10kg" },
-              ]}
-              isMulti
-              className="w-full p-2 border-2 border-gray-700 rounded"
-              onChange={(value) => {
-                setFieldValue("weight", value.map((v) => v.value));
-                handleWeightChange(value, setFieldValue);
-              }}
-              value={values.weight.map((w) => ({
-                value: w,
-                label: w,
-              }))}
-            />
-            <ErrorMessage
-              name="weight"
-              component="div"
-              className="text-red-500 text-xs"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-bold mb-2">Price</label>
-            <Field
-              name="price"
-              type="number"
-              className="w-full p-2 border-2 border-gray-700 rounded"
-            />
-            <ErrorMessage
-              name="price"
-              component="div"
-              className="text-red-500 text-xs"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-bold mb-2">Category</label>
+            <label className="block text-gray-700 font-bold mb-2">
+              Category
+            </label>
             <Select
               name="category"
               options={categoryOptions}
-              className="w-full p-2 border-2 border-gray-700  rounded"
+              className="w-full p-2 border-2 border-gray-700 rounded"
               onChange={(value) => setFieldValue("category", value.value)}
-              value={categoryOptions.find((option) => option.value === values.category)}
+              value={categoryOptions.find(
+                (option) => option.value === defaultValues.category
+              )}
             />
             <ErrorMessage
               name="category"
@@ -189,13 +192,17 @@ const ProductForm = ({ initialValues = {}, handleSave, isEdit,handleCloseModal }
               name="image"
               type="file"
               accept="image/*"
-              className="w-full p-2 border-2 border-gray-700  rounded"
+              className="w-full p-2 border-2 border-gray-700 rounded"
               onChange={handleImageChange}
             />
             {imageUrl && (
               <div className="mt-2">
                 <img
-                  src={typeof imageUrl === "string" ? imageUrl : URL.createObjectURL(imageUrl)}
+                  src={
+                    typeof imageUrl === "string"
+                      ? imageUrl
+                      : URL.createObjectURL(imageUrl)
+                  }
                   alt="Product Preview"
                   className="w-full h-24 object-cover rounded"
                 />
