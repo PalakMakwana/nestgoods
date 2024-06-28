@@ -164,8 +164,8 @@ function Landing() {
 
       <div className="relative" ref={refs.current[0]}>
         <img
-          className="w-full lg:h-[500px] sm:h-48 md:h-96 rounded-t-3xl"
-          src="https://img.freepik.com/premium-photo/banner-with-vegetables-copy-space-background-generative-aix9_195703-999.jpg?w=1060"
+          className="w-full lg:h-[530px] sm:h-48 md:h-96 rounded-t-3xl"
+          src="https://img.freepik.com/premium-photo/composition-shopping-day-concept-with-shopping-bags-paper-bags-copy-space-shopping-days_326694-96017.jpg?w=740"
           alt=""
         />
         <motion.p

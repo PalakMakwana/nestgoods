@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import image from "../images/Green Vintage Illustrative Food Logo (2).png";
 import Productfromdata from "../Components/Productfromdata";
-import { CartProvider } from './CartContext';
 import {
   UilShoppingCart,
   UilSearch,
@@ -18,8 +17,10 @@ import {
   UilShoppingBag,
 } from "@iconscout/react-unicons";
 import { signOut } from "firebase/auth";
+import { CartProvider, useCart } from "react-use-cart";
 function Products() {
   const navigate = useNavigate("");
+  const { addItem } = useCart();
 
   const handleLogout = () => {
     signOut(auth)
@@ -36,56 +37,58 @@ function Products() {
 // const userName = userData ? userData.username : null;
   return (
     <div className="bg-gray-50 min-h-screen">
-      <header className="bg-white shadow-md sticky top-0 z-50">
-        <nav className="flex justify-between p-5">
-          <div className="flex justify-evenly space-x-2">
-            <motion.div
-              className="bg-green-700 p-1 rounded-full cursor-pointer"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <img
-                onClick={() => navigate("/")}
-                src={image}
-                alt="Logo"
-                className="h-10 w-10 rounded-full"
-              />
-            </motion.div>
-            {/* {userName && (
-              <div className="flex  items-center mt-2">
-                <h2 className=" text-black mr-96">Welcome, {userName}!</h2>
-              </div>
-            )} */}
-            <p
-              style={{ fontFamily: "'Unbounded', sans-serif" }}
-              className="text-green-800 text-2xl mt-2   items-center  font-bold"
-            >
-              Prakrutik Aahar Kendra
-            </p>
-          </div>
-<button onClick={handleLogout}>Logout</button>
+       <header className="bg-white shadow-md sticky top-0 z-50">
+      <nav className="flex flex-wrap justify-between items-center p-5">
+        <div className="flex items-center space-x-2">
           <motion.div
-            className="flex space-x-4 items-center"
+            className="bg-green-700 p-1 rounded-full cursor-pointer"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.5 }}
           >
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search here"
-                className="border text-center w-28 md:w-52 sm:w-72 border-green-600 rounded-full py-2 px-4"
-              />
-              <UilSearch className="text-green-700 h-8 w-8 cursor-pointer absolute right-2 top-1/2 transform -translate-y-1/2" />
-            </div>
-            <UilShoppingCart
-              className="text-green-700 h-8 w-8 cursor-pointer"
-              onClick={() => navigate("/cart")}
+            <img
+              onClick={() => navigate("/")}
+              src={image}
+              alt="Logo"
+              className="h-10 w-10 rounded-full"
             />
           </motion.div>
-        </nav>
-      </header>
+          <p
+            style={{ fontFamily: "'Unbounded', sans-serif" }}
+            className="text-green-800 text-2xl mt-2 font-bold"
+          >
+            Prakrutik Aahar Kendra
+          </p>
+        </div>
+
+        <motion.div
+          className="flex space-x-4 items-center mt-4 md:mt-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search here"
+              className="border text-center w-28 sm:w-36 md:w-52 border-green-600 rounded-full py-2 px-4"
+            />
+            <UilSearch className="text-green-700 h-8 w-8 cursor-pointer absolute right-2 top-1/2 transform -translate-y-1/2" />
+          </div>
+          <UilShoppingCart
+            className="text-green-700 h-8 w-8 cursor-pointer"
+            onClick={() => navigate("/cart")}
+          />
+          <button
+            className="bg-green-700 text-white py-2 px-4 rounded-full"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </motion.div>
+        <Link to='/orderhistory'>Order History</Link>
+      </nav>
+    </header>
       <div className="flex">
         <main className="flex-1 space-y-5 p-2">
           <div className="relative text-center items-center justify-center">
@@ -178,7 +181,7 @@ function Products() {
                 },
               }}
             >
-              <Productfromdata showActions={false} showCart={true} />
+              <Productfromdata showActions={false}  showWeight={true} />
             </motion.div>
           </div>
           <div>

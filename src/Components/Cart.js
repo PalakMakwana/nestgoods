@@ -1,180 +1,154 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useCart } from './CartContext';
-import { db } from '../Firebase';
-import { addDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import AuthContext from './AuthContext';
+import React, { useEffect, useState } from "react";
+import { useCart } from "react-use-cart";
+import { db } from "../Firebase";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { useAuth } from "./AuthContext";
 
-const Cart = () => {
-  const { cartItems, clearCart } = useCart();
-  const { currentUser } = useContext(AuthContext);
-  const [isCheckout, setIsCheckout] = useState(false);
-  const [isOrderHistory, setIsOrderHistory] = useState(false);
-  const [address, setAddress] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [orderHistory, setOrderHistory] = useState([]);
-
-  const calculateSubtotal = () => {
-    let subtotal = 0;
-    cartItems.forEach(item => {
-      subtotal += item.price * item.quantity;
-    });
-    return subtotal;
-  };
-
-  const handleCheckout = async () => {
-    if (!currentUser) {
-      alert("Please log in to complete the purchase.");
-      return;
-    }
-    try {
-      const total = calculateSubtotal();
-      const docRef = await addDoc(collection(db, 'Orders'), {
-        userId: currentUser.uid,
-        items: cartItems,
-        address,
-        phoneNumber,
-        total,
-        createdAt: new Date()
-      });
-      clearCart();
-      console.log('Order placed with ID: ', docRef.id);
-    } catch (e) {
-      console.error('Error adding document: ', e);
-    }
-  };
-
-  const fetchOrderHistory = async () => {
-    if (!currentUser) return;
-
-    const q = query(collection(db, 'Orders'), where('userId', '==', currentUser.uid));
-    const querySnapshot = await getDocs(q);
-    const orders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setOrderHistory(orders);
-  };
+const Cart = ({ onClose }) => {
+  const { isEmpty, updateItemQuantity, removeItem, cartTotal, emptyCart } = useCart();
+  const { currentUser } = useAuth();
+  const [address, setAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
-    if (isOrderHistory) {
-      fetchOrderHistory();
+    const unsubscribe = onSnapshot(collection(db, "cart"), (snap) => {
+      const alldata = snap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setItems(alldata);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (isEmpty) {
+    return (
+      <div className="text-center">
+        <img
+          src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-2130356-1800917.png"
+          className="w-48 h-48 mx-auto"
+          alt="Empty Cart"
+        />
+        <p className="mt-4 text-xl">Empty Cart</p>
+      </div>
+    );
+  }
+
+  const handleCheckout = async () => {
+    if (!address || !phoneNumber) {
+      alert("Please fill in all fields");
+      return;
     }
-  }, [isOrderHistory, currentUser]);
+
+    const order = {
+      userId: currentUser.uid,
+      items,
+      address,
+      phoneNumber,
+      total: cartTotal,
+      createdAt: new Date(),
+    };
+
+    try {
+      await addDoc(collection(db, "Orders"), order);
+      emptyCart();
+      alert("Order placed successfully");
+      onClose();
+    } catch (error) {
+      console.error("Error placing order:", error);
+    }
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-        <h1 className="text-2xl font-bold my-4">Shopping Cart</h1>
-        <div>
-          <button
-            className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mr-2"
-            onClick={() => setIsCheckout(!isCheckout)}
-          >
-            {isCheckout ? 'Cancel' : 'Checkout'}
+    <>
+      <div></div>
+      <div className="p-5 bg-white shadow-lg rounded-lg">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold">Your Cart</h2>
+          <button onClick={onClose} className="text-red-500 hover:text-red-700">
+            &times;
           </button>
+        </div>
+        <ul className="divide-y divide-gray-200">
+          {items
+            .filter((data) => data.User_uid === currentUser.uid)
+            .map((item) => (
+              <li key={item.id} className="py-4 flex space-x-4">
+                <img
+                  src={item.image}
+                  alt={item.ItemName}
+                  className="w-24 h-24 object-cover rounded-lg"
+                />
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold">{item.ItemName}</h3>
+                  <p className="text-sm text-gray-600">{item.weight}</p>
+                  <p className="text-sm font-semibold text-gray-800">
+                    ${item.price}
+                  </p>
+                  <div className="flex items-center mt-2">
+                    <button
+                      onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                      className="bg-gray-200 px-2 py-1 rounded-l-md hover:bg-gray-300"
+                    >
+                      -
+                    </button>
+                    <span className="px-4 py-1 bg-gray-100">
+                      {item.quantity}
+                    </span>
+                    <button
+                      onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                      className="bg-gray-200 px-2 py-1 rounded-r-md hover:bg-gray-300"
+                    >
+                      +
+                    </button>
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="ml-4 text-red-500 hover:text-red-700"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center font-semibold">
+                  <span>Total:</span>
+                  <span>${item.price * item.quantity}</span>
+                </div>
+              </li>
+            ))}
+        </ul>
+        <div className="mt-4">
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Address
+            </label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Phone Number
+            </label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            />
+          </div>
           <button
-            className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => setIsOrderHistory(!isOrderHistory)}
+            className="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white py-2 rounded-md"
+            onClick={handleCheckout}
           >
-            {isOrderHistory ? 'Back to Cart' : 'Order History'}
+            Pay Now
           </button>
         </div>
       </div>
-      
-      {!isOrderHistory ? (
-        <div>
-          <div className="mt-8">
-            {cartItems.map((item) => (
-              <div key={item.id} className="flex flex-col md:flex-row border-b border-gray-400 py-4">
-                <div className="flex-shrink-0">
-                  <img src={item.image} alt={item.title} className="w-32 h-32 object-cover" />
-                </div>
-                <div className="mt-4 md:mt-0 md:ml-6">
-                  <h2 className="text-lg font-bold">{item.title}</h2>
-                  <p className="mt-2 text-gray-600">{item.description}</p>
-                  <div className="mt-4 flex items-center">
-                    <span className="mr-2 text-gray-600">Quantity:</span>
-                    <div className="flex items-center">
-                      <button className="bg-gray-200 rounded-l-lg px-2 py-1" disabled>-</button>
-                      <span className="mx-2 text-gray-600">{item.quantity}</span>
-                      <button className="bg-gray-200 rounded-r-lg px-2 py-1" disabled>+</button>
-                    </div>
-                    <span className="ml-auto font-bold">${item.price}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-end items-center mt-8">
-            <span className="text-gray-600 mr-4">Subtotal:</span>
-            <span className="text-xl font-bold">${calculateSubtotal()}</span>
-          </div>
-          {isCheckout && (
-            <div className="mt-8">
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="address">
-                  Address
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="address"
-                  type="text"
-                  placeholder="Enter your address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="phoneNumber">
-                  Phone Number
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="phoneNumber"
-                  type="text"
-                  placeholder="Enter your phone number"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
-              </div>
-              <button
-                className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
-                onClick={handleCheckout}
-              >
-                Place Order
-              </button>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div>
-          <h2 className="text-xl font-bold my-4">Order History</h2>
-          <div className="mt-8">
-            {orderHistory.map(order => (
-              <div key={order.id} className="border-b border-gray-400 py-4">
-                <h3 className="text-lg font-bold">Order ID: {order.id}</h3>
-                <p className="text-gray-600">Placed on: {new Date(order.createdAt.toDate()).toLocaleString()}</p>
-                <p className="text-gray-600">Address: {order.address}</p>
-                <p className="text-gray-600">Phone Number: {order.phoneNumber}</p>
-                <p className="text-gray-600">Total: ${order.total}</p>
-                <div className="mt-4">
-                  <h4 className="text-md font-bold">Items:</h4>
-                  {order.items.map(item => (
-                    <div key={item.id} className="flex flex-col md:flex-row py-2">
-                      <div className="flex-shrink-0">
-                        <img src={item.image} alt={item.title} className="w-16 h-16 object-cover" />
-                      </div>
-                      <div className="mt-2 md:mt-0 md:ml-4">
-                        <h5 className="text-md font-bold">{item.title}</h5>
-                        <p className="text-gray-600">Quantity: {item.quantity}</p>
-                        <p className="text-gray-600">Price: ${item.price}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 
