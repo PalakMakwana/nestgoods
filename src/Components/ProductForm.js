@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { addDoc, collection } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 import Select from "react-select";
-import { v4 as uuidv4, v4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { db } from "../Firebase";
 
 const validationSchema = Yup.object().shape({
@@ -35,8 +35,9 @@ const ProductForm = ({
   handleCloseModal,
 }) => {
   const [imageUrl, setImageUrl] = useState(initialValues.image || "");
+  const [selectedWeightAndPrice, setSelectedWeightAndPrice] = useState(null);
   const [weightAndPrice, setWeightAndPrice] = useState(
-    initialValues.weightAndPrice || [{ weight: "", price: "" }]
+    initialValues.weightAndPrice || [{ id: uuidv4(), weight: "", price: "" }]
   );
 
   const defaultValues = {
@@ -45,8 +46,6 @@ const ProductForm = ({
     category: "",
     image: "",
   };
-
-
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
@@ -80,7 +79,7 @@ const ProductForm = ({
 
   const handleUploadImage = async (file) => {
     const storage = getStorage();
-    const imageRef = ref(storage, `ProductImages/${v4()}`);
+    const imageRef = ref(storage, `ProductImages/${uuidv4()}`);
     await uploadBytes(imageRef, file);
     const url = await getDownloadURL(imageRef);
     return url;
@@ -97,8 +96,9 @@ const ProductForm = ({
     setWeightAndPrice(newWeightAndPrice);
   };
 
-  const addWeightAndPrice = () => {
-    setWeightAndPrice([...weightAndPrice, { id: uuidv4(), weight: '', price: '' }]);
+  const addWeightAndPrice = (id) => {
+    const selectedPair = weightAndPrice.find(item => item.id === id);
+    setSelectedWeightAndPrice(selectedPair);
   };
 
   const removeWeightAndPrice = (index) => {
@@ -106,122 +106,126 @@ const ProductForm = ({
     setWeightAndPrice(newWeightAndPrice);
   };
 
-
   return (
-    <Formik
-      initialValues={defaultValues}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-      enableReinitialize
-    >
-      {({ setFieldValue, isSubmitting, values }) => (
-        <Form className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-bold mb-2">
-              Item Name
-            </label>
-            <Field
-              name="ItemName"
-              type="text"
-              className="w-full p-2 border-2 border-gray-700 rounded"
-            />
-            <ErrorMessage
-              name="ItemName"
-              component="div"
-              className="text-red-500 text-xs"
-            />
-          </div>
+    <div className="">
+      <Formik
+        initialValues={defaultValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+        enableReinitialize
+      >
+        {({ setFieldValue, isSubmitting, values }) => (
+          <Form className="space-y-4 overflow-y-scroll h-[470px]">
+            <div>
+              <label className="block text-gray-700 font-bold mb-2">
+                Item Name
+              </label>
+              <Field
+                name="ItemName"
+                type="text"
+                className="w-full p-2 border-2 border-gray-700 rounded"
+              />
+              <ErrorMessage
+                name="ItemName"
+                component="div"
+                className="text-red-500 text-xs"
+              />
+            </div>
 
-          <FieldArray name="weightAndPrice">
-            {({ push }) => (
-              <div className="mt-2 sm:mt-4">
-                <label className="block mb-2 text-sm text-gray-600">Weight and Price</label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    push({ id: uuidv4(), weight: '', price: '' });
-                  }}
-                  className="bg-[#F58634] p-2 text-lg text-[#FBFFFF] rounded-full"
-                >
-                  Add Weight & Price
-                </button>
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 mt-2 sm:mt-4">
-                  {values.weightAndPrice.map((detail, index) => (
-                    <React.Fragment key={detail.id}>
-                      <Field
-                        name={`weightAndPrice[${index}].weight`}
-                        type="text"
-                        placeholder="Weight"
-                        className="border-2 border-gray-700 rounded-md p-1"
-                      />
-                      <Field
-                        name={`weightAndPrice[${index}].price`}
-                        type="text"
-                        placeholder="Price"
-                        className="border-2 border-gray-700 rounded-md p-1"
-                      />
-                    </React.Fragment>
-                  ))}
+            <FieldArray name="weightAndPrice">
+              {({ push }) => (
+                <div className="mt-2 sm:mt-4">
+                  <label className="block mb-2 text-sm text-gray-600">Weight and Price</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const id = uuidv4();
+                      push({ id, weight: '', price: '' });
+                      addWeightAndPrice(id); // Track selected pair
+                    }}
+                    className="bg-[#F58634] p-2 text-lg text-[#FBFFFF] rounded-full"
+                  >
+                    Add Weight & Price
+                  </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 mt-2 sm:mt-4">
+                    {values.weightAndPrice.map((detail, index) => (
+                      <React.Fragment key={detail.id}>
+                        <Field
+                          name={`weightAndPrice[${index}].weight`}
+                          type="text"
+                          placeholder="Weight"
+                          className="border-2 border-gray-700 rounded-md p-1"
+                        />
+                        <Field
+                          name={`weightAndPrice[${index}].price`}
+                          type="text"
+                          placeholder="Price"
+                          className="border-2 border-gray-700 rounded-md p-1"
+                        />
+                      </React.Fragment>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </FieldArray>
-          <div>
-            <label className="block text-gray-700 font-bold mb-2">
-              Category
-            </label>
-            <Select
-              name="category"
-              options={categoryOptions}
-              className="w-full p-2 border-2 border-gray-700 rounded"
-              onChange={(value) => setFieldValue("category", value.value)}
-              value={categoryOptions.find(
-                (option) => option.value === defaultValues.category
               )}
-            />
-            <ErrorMessage
-              name="category"
-              component="div"
-              className="text-red-500 text-xs"
-            />
-          </div>
+            </FieldArray>
 
-          <div>
-            <label className="block text-gray-700 font-bold mb-2">Image</label>
-            <input
-              name="image"
-              type="file"
-              accept="image/*"
-              className="w-full p-2 border-2 border-gray-700 rounded"
-              onChange={handleImageChange}
-            />
-            {imageUrl && (
-              <div className="mt-2">
-                <img
-                  src={
-                    typeof imageUrl === "string"
-                      ? imageUrl
-                      : URL.createObjectURL(imageUrl)
-                  }
-                  alt="Product Preview"
-                  className="w-full h-24 object-cover rounded"
-                />
-              </div>
-            )}
-          </div>
+            <div>
+              <label className="block text-gray-700 font-bold mb-2">
+                Category
+              </label>
+              <Select
+                name="category"
+                options={categoryOptions}
+                className="w-full p-2 border-2 border-gray-700 rounded"
+                onChange={(value) => setFieldValue("category", value.value)}
+                value={categoryOptions.find(
+                  (option) => option.value === defaultValues.category
+                )}
+              />
+              <ErrorMessage
+                name="category"
+                component="div"
+                className="text-red-500 text-xs"
+              />
+            </div>
 
-          <div className="flex justify-end space-x-2">
-            <button
-              type="submit"
-              className="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded"
-              disabled={isSubmitting}
-            >
-              {isEdit ? "Update" : "Submit"}
-            </button>
-          </div>
-        </Form>
-      )}
-    </Formik>
+            <div>
+              <label className="block text-gray-700 font-bold mb-2">Image</label>
+              <input
+                name="image"
+                type="file"
+                accept="image/*"
+                className="w-full p-2 border-2 border-gray-700 rounded"
+                onChange={handleImageChange}
+              />
+              {imageUrl && (
+                <div className="mt-2">
+                  <img
+                    src={
+                      typeof imageUrl === "string"
+                        ? imageUrl
+                        : URL.createObjectURL(imageUrl)
+                    }
+                    alt="Product Preview"
+                    className="w-full h-24 object-cover rounded"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <button
+                type="submit"
+                className="bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded"
+                disabled={isSubmitting}
+              >
+                {isEdit ? "Update" : "Submit"}
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 };
 

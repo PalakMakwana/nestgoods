@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { UilShoppingCart, UilSearch } from '@iconscout/react-unicons';
-
+import {Link } from 'react-router-dom'
 const Header = ({ handleLogout, navigate, image }) => {
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -43,10 +43,12 @@ const Header = ({ handleLogout, navigate, image }) => {
               className="border text-center w-28 md:w-52 sm:w-72 border-green-600 rounded-full py-2 px-4"
             />
             <UilSearch className="text-green-700 h-8 w-8 cursor-pointer absolute right-2 top-1/2 transform -translate-y-1/2" />
+
           </div>
+         
           <UilShoppingCart
             className="text-green-700 h-8 w-8 cursor-pointer"
-            onClick={() => navigate('/cart')}
+
           />
         </motion.div>
       </nav>
