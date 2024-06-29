@@ -3,6 +3,8 @@ import { useCart } from "react-use-cart";
 import { db } from "../Firebase";
 import { collection, addDoc, onSnapshot } from "firebase/firestore";
 import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
+import { UilShoppingCartAlt } from '@iconscout/react-unicons'
 
 const Cart = ({ onClose }) => {
   const { isEmpty, updateItemQuantity, removeItem, cartTotal, emptyCart } = useCart();
@@ -11,6 +13,7 @@ const Cart = ({ onClose }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [items, setItems] = useState([]);
 
+  const navigate = useNavigate('')
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "cart"), (snap) => {
       const alldata = snap.docs.map((doc) => ({
@@ -24,13 +27,22 @@ const Cart = ({ onClose }) => {
 
   if (isEmpty) {
     return (
-      <div className="text-center">
+      <div className="text-center space-y-4">
         <img
           src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-2130356-1800917.png"
-          className="w-48 h-48 mx-auto"
-          alt="Empty Cart"
+          className=" mx-auto"
+          alt="Your Cart is empty"
         />
-        <p className="mt-4 text-xl">Empty Cart</p>
+    <p  style={{ fontFamily: "'Unbounded', sans-serif" }}  className="mt-4 text-xl text-[#26355D] ">Your Cart is empty!!</p>
+
+
+<button style={{ fontFamily: "'PT Serif', sans-serif" }} onClick={()=>navigate('/products')}  class="inline-flex overflow-hidden text-gray-600 font-semibold shadow-md shadow-[#E6B9A6] bg-[#a1eb66] rounded group">
+<span class="px-3.5 py-2 bg-[#3AA6B9]  text-white group-hover:bg-teal-400 flex items-center justify-center">
+<svg class="w-12 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+</span>
+<span class="pl-4 pr-5 py-2.5"> Continue Shopping</span>
+</button>
+
       </div>
     );
   }

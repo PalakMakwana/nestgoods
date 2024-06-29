@@ -38,7 +38,7 @@ function Products() {
   return (
     <div className="bg-gray-50 min-h-screen">
        <header className="bg-white shadow-md sticky top-0 z-50">
-      <nav className="flex flex-wrap justify-between items-center p-5">
+      <nav className="flex flex-wrap justify-between items-center p-2">
         <div className="flex items-center space-x-2">
           <motion.div
             className="bg-green-700 p-1 rounded-full cursor-pointer"
@@ -79,29 +79,62 @@ function Products() {
             className="text-green-700 h-8 w-8 cursor-pointer"
             onClick={() => navigate("/cart")}
           />
+         
+          <Link to='/orderhistory' className="bg-gray-800 hover:bg-gray-500 text-white py-2 px-4 rounded-full">Order History</Link>
           <button
-            className="bg-green-700 text-white py-2 px-4 rounded-full"
+            className="bg-green-700 hover:bg-green-500 text-white py-2 px-4 rounded-full"
             onClick={handleLogout}
           >
             Logout
           </button>
         </motion.div>
-        <Link to='/orderhistory'>Order History</Link>
+       
       </nav>
     </header>
       <div className="flex">
         <main className="flex-1 space-y-5 p-2">
           <div className="relative text-center items-center justify-center">
-            <motion.img
-              className="h-[400px] w-full rounded-md object-cover"
-              src="https://img.freepik.com/free-photo/top-view-vegetables-fruits-bag_23-2148949707.jpg?t=st=1719064999~exp=1719068599~hmac=73f0365230da771bd2e62b9c201d771cfc333ec8c985781ae0a8328d5a7b2f2d&w=1060"
+          <div className="flex space-x-4 relative overflow-hidden">
+          <motion.img
+              className="h-[410px] w-[580px]  shadow-lg  rounded-md object-cover"
+              src="https://img.freepik.com/premium-photo/yellow-pineapple-background-social-media-advertising-fruit-citrus-vitamin-c-generative-ai_90099-9602.jpg?w=1060"
               alt="Banner"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.5 }}
             />
+           <div className="space-y-2">
+           <motion.img
+              className="h-[200px] shadow-lg rounded-md object-cover"
+              src="https://img.freepik.com/free-photo/fresh-strawberries-wooden-table_1150-8053.jpg?t=st=1719680720~exp=1719684320~hmac=3752966fb37fa78c07d82f97cd13c65166c83cc4af3a80bd0df70163e6d8a684&w=900"
+              alt="Banner"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5 }}
+            />
+              <motion.img
+              className="h-[200px] w-[290px] shadow-lg rounded-md object-cover"
+              src="https://img.freepik.com/premium-photo/blueberry-bliss-16k-uhd-cinematic-natural-color-wallpaper_1106493-26291.jpg?w=740"
+              alt="Banner"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1,opacity: 1, x:5  }}
+              transition={{ duration: 0.5 }}
+            />
+           </div>
+           
+             <motion.img
+              className="h-[410px] w-[340px] shadow-lg  rounded-md object-cover"
+              src="https://img.freepik.com/premium-photo/fresh-piece-cheese_378630-5125.jpg?w=1060"
+              alt="Banner"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5 }}
+            />
+          </div>
+          
+          <div className="absolute inset-0 rounded-lg  bg-black opacity-30"></div>
             <motion.p
-              className="absolute top-10 right-20 text-gray-800 text-lg font-medium text-shadow-md p-2 rounded-lg"
+              className="absolute top-4 left-10 text-gray-100 text-lg font-medium text-shadow-md p-2 rounded-lg"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
@@ -110,16 +143,16 @@ function Products() {
               Grocery & Herbs
             </motion.p>
             <motion.p
-              className="absolute top-20 right-20 text-gray-800 text-2xl font-medium text-shadow-md p-2 rounded-lg"
+              className="absolute top-14 left-10 text-gray-200 text-2xl font-medium text-shadow-md p-2 rounded-lg"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
               style={{ fontFamily: "'Unbounded', sans-serif" }}
             >
               <p className="text-justify">Discover the Pure Organic Shop</p>
-            </motion.p>
+            </motion.p> 
             <motion.p
-              className="absolute bottom-24 right-20 text-xl bg-green-700 rounded-lg text-white p-1 flex items-center cursor-pointer"
+              className="absolute bottom-24 left-12 text-xl bg-white rounded-lg text-green-700 p-1 flex items-center cursor-pointer"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
@@ -135,7 +168,7 @@ function Products() {
               onClick={() => navigate("/shop")}
             >
               <>
-                <div className="px-10 ml-10 mr-10 rounded-md shadow-lg bg-white py-14 flex justify-evenly">
+                <div className="px-10 ml-10 mr-10 rounded-md shadow-lg bg-[#EEF7FF] py-14 flex justify-evenly">
                   <div className="">
                     <UilShoppingBag className="ml-10  bg-[#96DC39]  rounded-md" />
                     <p className=""> Free Shipping</p>
@@ -160,8 +193,10 @@ function Products() {
               </>
             </motion.p>
           </div>
+         
           <div className="py-32">
-            <h1 className="text-2xl font-semibold mb-5">Products</h1>
+          <hr className="border-gray-500 "/>
+            <h1 className="text-2xl font-semibold">Products</h1>
             <motion.div
               className=""
               initial="hidden"
@@ -181,11 +216,12 @@ function Products() {
                 },
               }}
             >
-              <Productfromdata showActions={false}  showWeight={true} />
+              <Productfromdata showActions={false}  showWeight={true}  showcart={true}/>
             </motion.div>
           </div>
+          <hr className="border-gray-500 "/>
           <div>
-            <div></div>
+            
             <div className="relative h-[400px] w-full  overflow-hidden">
               <motion.img
                 className="h-full w-full object-cover"

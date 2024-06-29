@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { db ,auth} from "../Firebase";
+import { db, auth } from "../Firebase";
+import { UilFilter } from '@iconscout/react-unicons'
 import {
   collection,
   getDocs,
@@ -12,8 +13,9 @@ import ProductForm from "./ProductForm";
 import all from "../images/All Products.png";
 import { useCart } from "react-use-cart";
 import Select from "react-select";
+import { Link } from "react-router-dom";
 
-const ProductFromData = ({ showActions, showWeight }) => {
+const ProductFromData = ({ showActions, showWeight, showcart }) => {
   const [productData, setProductData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -125,12 +127,16 @@ const ProductFromData = ({ showActions, showWeight }) => {
   ];
 
   return (
-    <div className="p-5">
+    <div className="p-5 space-y-5">
+<div className="flex text-gray-700 text-xl font-semibold space-x-2">
+<p>Filter</p><UilFilter/> 
+</div>
       <div className="grid h-[] grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4 mb-4">
+   
         {categories.map((category) => (
           <div
             key={category.name}
-            className={`cursor-pointer p-2 rounded-lg border ${
+            className={`cursor-pointer p-2 rounded-lg text-xl border ${
               selectedCategory === category.name
                 ? "border-blue-500"
                 : "border-transparent"
@@ -148,100 +154,104 @@ const ProductFromData = ({ showActions, showWeight }) => {
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {filterData.map((product) => (
-          <article
+          <div
             key={product.id}
-            className="relative overflow-hidden rounded-lg shadow transition hover:shadow-lg"
+            className="relative bg-white border border-gray-200 rounded-lg shadow-sm p-2 flex flex-col justify-between"
           >
-            {product.image && (
+         <Link to={`/product/${product.id}`}>
+         
+         {product.image && (
               <img
                 src={product.image}
                 alt={product.ItemName}
-                className="absolute inset-0 h-full w-full object-cover"
+                className="w-full h-48 object-cover rounded-lg mb-4"
               />
             )}
-            <div className="relative bg-gradient-to-t from-gray-900/50 to-gray-900/25 pt-32 sm:pt-48 lg:pt-64">
-              <div className="p-4 sm:p-6">
-                <h2 className="text-lg text-white font-semibold">
-                  {product.ItemName}
-                </h2>
-                <p className="block text-xs text-white/90 mt-2">
-                  <span className="font-semibold">Category:</span>{" "}
-                  {product.category}
-                </p>
-                {showWeight && (
-                  <div className="flex justify-between mt-2">
-                    <Select
-                      options={
-                        product.weightAndPrice
-                          ? product.weightAndPrice.map((item) => ({
-                              value: item.weight,
-                              label: `${item.weight} - ${item.price}`,
-                              price: item.price,
-                            }))
-                          : []
-                      }
-                      onChange={(selectedOption) =>
-                        handleWeightChange(product.id, selectedOption)
-                      }
-                    />
-                  </div>
-                )}
-                <button
-                  onClick={() => {
-                    const selectedOption = selectedWeightAndPrice[product.id];
-                    if (selectedOption) {
-                      console.log({
-                        ...product,
-                        price: selectedOption.price,
-                        weight: selectedOption.value,
-                      });
-                      console.log(auth?.currentUser?.uid);
-                      addDoc(collection(db,'cart'),{
-                        ...product,
-                        price: selectedOption.price,
-                        weight: selectedOption.value,
-                        quantity:1,
-                        User_uid:auth?.currentUser?.uid,
-                        User_name:auth?.currentUser?.displayName
-                      }).then((res)=>{
-                        console.log(res);
-                      }).catch((err)=>{
-                        console.log(err);
-                      })
-                      addItem({
-                        ...product,
-                        price: selectedOption.price,
-                        weight: selectedOption.value,
-                      });
-                    } else {
-                      alert("Please select a weight and price.");
-                    }
-                  }}
-                >
-                  Add to cart
-                </button>
-
-                {showActions && (
-                  <div className="flex justify-end space-x-2 mt-2">
-                    <button
-                      className="text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline"
-                      onClick={() => handleEdit(product)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline"
-                      onClick={() => handleDelete(product.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </div>
+            </Link>
+            <div className="flex-grow">
+              <h2 className="text-lg capitalize font-semibold text-gray-900">
+                {product.ItemName}
+              </h2>
+              <p className="text-sm capitalize text-gray-600">
+                <span className="capitalize font-semibold">Category:</span>{" "}
+                {product.category}
+              </p>
+              {showWeight && (
+                <Select
+                  className="mt-2"
+                  options={
+                    product.weightAndPrice
+                      ? product.weightAndPrice.map((item) => ({
+                          value: item.weight,
+                          label: `${item.weight} - ${item.price}`,
+                          price: item.price,
+                        }))
+                      : []
+                  }
+                  onChange={(selectedOption) =>
+                    handleWeightChange(product.id, selectedOption)
+                  }
+                />
+              )}
             </div>
-          </article>
+            <div className="flex justify-between items-center mt-4">
+              {showcart &&(<button
+                className="bg-green-500 text-white px-4 py-2 rounded-md"
+                onClick={() => {
+                  const selectedOption = selectedWeightAndPrice[product.id];
+                  if (selectedOption) {
+                    console.log({
+                      ...product,
+                      price: selectedOption.price,
+                      weight: selectedOption.value,
+                    });
+                    console.log(auth?.currentUser?.uid);
+                    addDoc(collection(db, "cart"), {
+                      ...product,
+                      price: selectedOption.price,
+                      weight: selectedOption.value,
+                      quantity: 1,
+                      User_uid: auth?.currentUser?.uid,
+                      User_name: auth?.currentUser?.displayName,
+                    })
+                      .then((res) => {
+                        console.log(res);
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
+                    addItem({
+                      ...product,
+                      price: selectedOption.price,
+                      weight: selectedOption.value,
+                    });
+                  } else {
+                    alert("Please select a weight and price.");
+                  }
+                }}
+              >
+                Add to Cart
+              </button>)}
+              {showActions && (
+                <div className="flex space-x-2">
+                  <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded-md"
+                    onClick={() => handleEdit(product)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="bg-red-500 hover:bg-red-700 text-white px-2 py-1 rounded-md"
+                    onClick={() => handleDelete(product.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         ))}
       </div>
       {isEdit && (

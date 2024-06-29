@@ -52,8 +52,8 @@ function Login({ setShowLogin }) {
 
   return (
     <div>
-      <div className="contain py-16 bg-cover " style={{backgroundImage:"url('https://img.freepik.com/free-photo/top-view-copy-space-grapefruit-with-oranges-lemons-basket-white-background_141793-49666.jpg?w=740&t=st=1719377311~exp=1719377911~hmac=c68395f102a6ac8684030563113fbb136be3a054692f83c2a6fe0260844b9ca8')", }}>
-        <div className="max-w-lg mx-auto bg-white shadow px-6 py-7 rounded overflow-hidden">
+      <div className="contain bg-transparent " >
+        <div className="max-w-lg mx-auto bg-transparent  rounded overflow-hidden">
           <h2 className="text-2xl uppercase font-medium mb-1">Login</h2>
           <p className="text-gray-600 mb-6 text-sm">Welcome! So good to have you back!</p>
           <Formik

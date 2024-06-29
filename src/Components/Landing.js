@@ -26,7 +26,7 @@ const customStyles = {
     backgroundColor: "#ffffff",
   },
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
   },
   closeButton: {
     position: "absolute",
@@ -83,7 +83,7 @@ function Landing() {
   };
 
   return (
-    <div className="text-xl space-y-4 bg-slate-100 mb-10">
+    <div className="text-xl space-y-4 bg-slate-100 h-screen mb-10">
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}

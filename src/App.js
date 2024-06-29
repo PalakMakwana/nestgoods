@@ -18,6 +18,7 @@ import { AuthProvider } from './Components/AuthContext';
 import OrderHistory from './Components/OrderHistory';
 
 import './App.css';
+import PoductDetail from './Components/PoductDetail';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
               <Route path='/sidebar' element={<Sidebar />} />
               <Route path='/prductform' element={<ProductForm />} />
               <Route path='/orderhistory' element={<OrderHistory />} />
+              <Route path='/product/:id' element={<PoductDetail/>}/>
               {/* <Route path='/prductcard' element={<ProductCard />} /> */}
             </Routes>
             <Toaster position="top-center" />
