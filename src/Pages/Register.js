@@ -39,11 +39,11 @@ const Register = ({ setShowLogin }) => {
     }
   };
   return (
-    <div className="h-full bg-cover" style={{ backgroundImage: "url('https://img.freepik.com/free-photo/top-view-copy-space-grapefruit-with-oranges-lemons-basket-white-background_141793-49666.jpg?w=740&t=st=1719377311~exp=1719377911~hmac=c68395f102a6ac8684030563113fbb136be3a054692f83c2a6fe0260844b9ca8')" }}>
+    <div className="h-full ">
       <div className="mx-auto">
         <div className="flex justify-center px-6">
           <div className="w-full xl:w-3/4 lg:w-11/12 flex">
-            <div className="w-full bg-white rounded-lg lg:rounded-l-none">
+            <div className="w-full  rounded-lg lg:rounded-l-none">
               <h3 className="py-2 text-2xl text-center">Create an Account!</h3>
               <Formik
                 initialValues={{
@@ -56,7 +56,7 @@ const Register = ({ setShowLogin }) => {
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
               >
-                <Form className="px-8 pt-2 pb-8 mb-4 shadow-lg rounded">
+                <Form className="px-8 pt-2 pb-8 mb-4 border-2  rounded">
                   <div className="mb-4 md:flex md:justify-between">
                     <div className="mb-4 md:mr-2 md:mb-0">
                       <label className="block mb-2 text-sm font-bold text-gray-700" htmlFor="username">

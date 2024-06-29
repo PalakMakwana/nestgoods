@@ -7,13 +7,16 @@ import Select from "react-select";
 import { v4 as uuidv4 } from 'uuid';
 import { db } from "../Firebase";
 
+
+const weightPriceSchema = Yup.string().matches(/^\d+(\s?\w+)*$/, "Must start with a number").required("This field is required");
+
 const validationSchema = Yup.object().shape({
   ItemName: Yup.string().required("Item Name is required"),
   weightAndPrice: Yup.array()
     .of(
       Yup.object().shape({
-        weight: Yup.string().required("Weight is required"),
-        price: Yup.number().required("Price is required"),
+        weight: weightPriceSchema,
+        price: weightPriceSchema,
       })
     )
     .min(1, "At least one weight and price pair must be specified"),
@@ -42,9 +45,10 @@ const ProductForm = ({
 
   const defaultValues = {
     ItemName: "",
-    weightAndPrice: [],
+    weightAndPrice: weightAndPrice,
     category: "",
     image: "",
+    description:"",
   };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
@@ -133,7 +137,7 @@ const ProductForm = ({
             </div>
 
             <FieldArray name="weightAndPrice">
-              {({ push }) => (
+              {({ push, remove }) => (
                 <div className="mt-2 sm:mt-4">
                   <label className="block mb-2 text-sm text-gray-600">Weight and Price</label>
                   <button
@@ -149,20 +153,37 @@ const ProductForm = ({
                   </button>
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 mt-2 sm:mt-4">
                     {values.weightAndPrice.map((detail, index) => (
-                      <React.Fragment key={detail.id}>
+                      <div key={detail.id} className="flex items-center space-x-2">
                         <Field
                           name={`weightAndPrice[${index}].weight`}
                           type="text"
                           placeholder="Weight"
-                          className="border-2 border-gray-700 rounded-md p-1"
+                          className="border-2 border-gray-700 rounded-md p-1 w-20"
+                        />
+                        <ErrorMessage
+                          name={`weightAndPrice[${index}].weight`}
+                          component="div"
+                          className="text-red-500 text-xs"
                         />
                         <Field
                           name={`weightAndPrice[${index}].price`}
                           type="text"
                           placeholder="Price"
-                          className="border-2 border-gray-700 rounded-md p-1"
+                          className="border-2 border-gray-700 rounded-md p-1 w-20"
                         />
-                      </React.Fragment>
+                        <ErrorMessage
+                          name={`weightAndPrice[${index}].price`}
+                          component="div"
+                          className="text-red-500 text-xs"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className="bg-red-500 text-white p-1 rounded-full"
+                        >
+                          &times;
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -179,7 +200,7 @@ const ProductForm = ({
                 className="w-full p-2 border-2 border-gray-700 rounded"
                 onChange={(value) => setFieldValue("category", value.value)}
                 value={categoryOptions.find(
-                  (option) => option.value === defaultValues.category
+                  (option) => option.value === values.category
                 )}
               />
               <ErrorMessage
@@ -188,7 +209,16 @@ const ProductForm = ({
                 className="text-red-500 text-xs"
               />
             </div>
-
+<div>
+<label className="block text-gray-700 font-bold mb-2">
+                Description
+              </label>
+              <Field
+                name="description"
+                type="text"
+                className="w-full p-2 border-2 border-gray-700 rounded"
+              />
+</div>
             <div>
               <label className="block text-gray-700 font-bold mb-2">Image</label>
               <input

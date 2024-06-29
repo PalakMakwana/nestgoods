@@ -53,10 +53,15 @@ function Dashboard() {
   }
 
   return (
-    <div className="dashboard">
+    <div className="dashboard ">
       <div>
-        <button className="bg-gray-800 p-1 rounded-1 text-gray-100" onClick={openModal}>   ADD PRODUCT  </button>
-        <h1 className="text-2xl font-bold mb-4">Product Form Data</h1>
+        <div className="p-10 flex justify-between">
+          <div>
+        <button className="bg-gray-800 p-2  rounded-1 text-gray-100" onClick={openModal}>   ADD PRODUCT  </button>
+        </div>        <div>
+        <p className="p-2 text-xl font-semibold">Admin Dashboard</p>
+        </div>
+        </div>
         <Modal
           isOpen={modalIsOpen}
           onRequestClose={closeModal}
