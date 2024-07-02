@@ -1,56 +1,85 @@
-
-
-import React, { useEffect, useState } from 'react';
-import { useAuth } from './AuthContext';
-import { db } from '../Firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import React, { useState, useEffect } from "react";
+import { db, auth } from "../Firebase";
+import { collection, getDocs, where, query } from "firebase/firestore";
 
 const OrderHistory = () => {
-  const { currentUser } = useAuth();
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      if (currentUser) {
-        const q = query(collection(db, 'Orders'), where('userId', '==', currentUser.uid));
-        const querySnapshot = await getDocs(q);
-        const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setOrders(ordersData);
-      }
-    };
-
     fetchOrders();
-  }, [currentUser]);
+  }, []);
 
-  if (!orders.length) {
-    return <p className="text-center">No orders found.</p>;
-  }
+  const fetchOrders = async () => {
+    try {
+      const ordersRef = collection(db, "orders");
+      const q = query(ordersRef, where("userId", "==", auth.currentUser.uid));
+      const querySnapshot = await getDocs(q);
+
+      const fetchedOrders = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setOrders(fetchedOrders);
+    } catch (error) {
+      console.error("Error fetching orders: ", error);
+    }
+  };
+
+  const generateGoogleMapsLink = (address) => {
+    const encodedAddress = encodeURIComponent(address);
+    return `https://www.google.com/maps?q=${encodedAddress}`;
+  };
 
   return (
-    <div className="p-5 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4">Order History</h2>
-      <ul className="divide-y divide-gray-200">
-        {orders.map((order) => (
-          <li key={order.id} className="py-4">
-            <h3 className="text-lg font-semibold">Order ID: {order.id}</h3>
-            <p className="text-sm text-gray-600">Address: {order.address}</p>
-            <p className="text-sm text-gray-600">Phone: {order.phoneNumber}</p>
-            <div className="mt-2">
-              <h4 className="text-md font-semibold">Items:</h4>
-              <ul className="list-disc pl-5">
-                {order.items.map((item, index) => (
-                  <li key={index}>
-                    {item.ItemName} - {item.weight} - ${item.price} x {item.quantity}
-                  </li>
-                ))}
-              </ul>
+    <div className="p-5 space-y-5">
+      <h2 className="text-2xl font-bold">Order History</h2>
+      {orders.length === 0 ? (
+        <p>No orders found.</p>
+      ) : (
+        <div className="space-y-8">
+          {orders.map((order) => (
+            <div key={order.id} className="border rounded-lg p-6 shadow-md">
+              <div className="flex justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold">Order ID: {order.id}</h3>
+                  <p className="text-gray-600">Placed at: {order.createdAt.toDate().toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Total: {order.total} rs</p>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold">Items:</h4>
+                <ul className="space-y-2">
+                  {order.items.map((item, index) => (
+                    <li key={index} className="flex items-center">
+                      <img src={item.image} alt={item.itemName} className="w-16 h-16 object-cover rounded-md mr-4" />
+                      <div>
+                        <p className="font-medium"> {item.ItemName}</p>
+                        <p className="text-gray-600 ">Quantity: {item.quantity}</p>
+                        <p className="text-gray-600">Price: {item.price} rs</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mt-4">
+                <p className="text-gray-600">Address: {order.address}</p>
+                <p className="text-gray-600">Phone Number: {order.phoneNumber}</p>
+                <a
+                  href={generateGoogleMapsLink(order.address)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline mt-2 block"
+                >
+                  View in Maps
+                </a>
+              </div>
             </div>
-            <div className="mt-2 font-semibold">
-              Total: ${order.total}
-            </div>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

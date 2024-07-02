@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { db, auth } from "../Firebase";
-import { UilFilter } from '@iconscout/react-unicons'
-import {
-  collection,
-  getDocs,
-  doc,
-  updateDoc,
-  deleteDoc,
-  addDoc,
-} from "firebase/firestore";
+import { UilFilter } from '@iconscout/react-unicons';
+import { collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
 import ProductForm from "./ProductForm";
 import all from "../images/All Products.png";
 import { useCart } from "react-use-cart";
 import Select from "react-select";
 import { Link } from "react-router-dom";
+import toast, { Toaster, ToastBar } from 'react-hot-toast';
+
 
 const ProductFromData = ({ showActions, showWeight, showcart }) => {
   const [productData, setProductData] = useState([]);
@@ -97,49 +92,76 @@ const ProductFromData = ({ showActions, showWeight, showcart }) => {
     }));
   };
 
+  const handleAddToCart = (product) => {
+
+    if (!auth.currentUser) {
+      alert("Please log in to add items to the cart.");
+
+      return;
+    }
+
+    const selectedOption = selectedWeightAndPrice[product.id];
+    if (selectedOption) {
+      addDoc(collection(db, "cart"), {
+        ...product,
+        price: selectedOption.price,
+        weight: selectedOption.value,
+        quantity: 1,
+        User_uid: auth?.currentUser?.uid,
+        User_name: auth?.currentUser?.displayName,
+      })
+        .then((res) => {
+          console.log(res);
+          toast.success('Items are added to cart')
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      addItem({
+        ...product,
+        price: selectedOption.price,
+        weight: selectedOption.value,
+      });
+    } else {
+     toast.error('select weight & price ')
+    }
+  };
+
   const categories = [
     { name: "all", image: all },
     {
       name: "fruits",
-      image:
-        "https://img.freepik.com/free-photo/colorful-fruits-tasty-fresh-ripe-juicy-white-desk_179666-169.jpg",
+      image: "https://img.freepik.com/free-photo/colorful-fruits-tasty-fresh-ripe-juicy-white-desk_179666-169.jpg",
     },
     {
       name: "vegetables",
-      image:
-        "https://img.freepik.com/free-photo/top-view-assortment-vegetables-paper-bag_23-2148853335.jpg",
+      image: "https://img.freepik.com/free-photo/top-view-assortment-vegetables-paper-bag_23-2148853335.jpg",
     },
     {
       name: "cereals",
-      image:
-        "https://img.freepik.com/premium-photo/wheat-grain-bag_54391-136.jpg",
+      image: "https://img.freepik.com/premium-photo/wheat-grain-bag_54391-136.jpg",
     },
     {
       name: "pulses",
-      image:
-        "https://img.freepik.com/free-photo/top-view-different-lentils-mini-white-spice-bowls-black-stone-table-vertical_176474-2189.jpg",
+      image: "https://img.freepik.com/free-photo/top-view-different-lentils-mini-white-spice-bowls-black-stone-table-vertical_176474-2189.jpg",
     },
     {
       name: "dairy",
-      image:
-        "https://img.freepik.com/free-photo/milk-glass-bottle-background-farm_1142-40886.jpg",
+      image: "https://img.freepik.com/free-photo/milk-glass-bottle-background-farm_1142-40886.jpg",
     },
   ];
 
   return (
     <div className="p-5 space-y-5">
-<div className="flex text-gray-700 text-xl font-semibold space-x-2">
-<p>Filter</p><UilFilter/> 
-</div>
+      <div className="flex text-gray-700 text-xl font-semibold space-x-2">
+        <p>Filter</p><UilFilter />
+      </div>
       <div className="grid h-[] grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4 mb-4">
-   
         {categories.map((category) => (
           <div
             key={category.name}
             className={`cursor-pointer p-2 rounded-lg text-xl border ${
-              selectedCategory === category.name
-                ? "border-blue-500"
-                : "border-transparent"
+              selectedCategory === category.name ? "border-blue-500" : "border-transparent"
             }`}
             onClick={() => handleFilter(category.name)}
           >
@@ -160,23 +182,21 @@ const ProductFromData = ({ showActions, showWeight, showcart }) => {
             key={product.id}
             className="relative bg-white border border-gray-200 rounded-lg shadow-sm p-2 flex flex-col justify-between"
           >
-         <Link to={`/product/${product.id}`}>
-         
-         {product.image && (
-              <img
-                src={product.image}
-                alt={product.ItemName}
-                className="w-full h-48 object-cover rounded-lg mb-4"
-              />
-            )}
+            <Link to={`/product/${product.id}`}>
+              {product.image && (
+                <img
+                  src={product.image}
+                  alt={product.ItemName}
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                />
+              )}
             </Link>
             <div className="flex-grow">
               <h2 className="text-lg capitalize font-semibold text-gray-900">
                 {product.ItemName}
               </h2>
               <p className="text-sm capitalize text-gray-600">
-                <span className="capitalize font-semibold">Category:</span>{" "}
-                {product.category}
+                <span className="capitalize font-semibold">Category:</span> {product.category}
               </p>
               {showWeight && (
                 <Select
@@ -197,43 +217,14 @@ const ProductFromData = ({ showActions, showWeight, showcart }) => {
               )}
             </div>
             <div className="flex justify-between items-center mt-4">
-              {showcart &&(<button
-                className="bg-green-500 text-white px-4 py-2 rounded-md"
-                onClick={() => {
-                  const selectedOption = selectedWeightAndPrice[product.id];
-                  if (selectedOption) {
-                    console.log({
-                      ...product,
-                      price: selectedOption.price,
-                      weight: selectedOption.value,
-                    });
-                    console.log(auth?.currentUser?.uid);
-                    addDoc(collection(db, "cart"), {
-                      ...product,
-                      price: selectedOption.price,
-                      weight: selectedOption.value,
-                      quantity: 1,
-                      User_uid: auth?.currentUser?.uid,
-                      User_name: auth?.currentUser?.displayName,
-                    })
-                      .then((res) => {
-                        console.log(res);
-                      })
-                      .catch((err) => {
-                        console.log(err);
-                      });
-                    addItem({
-                      ...product,
-                      price: selectedOption.price,
-                      weight: selectedOption.value,
-                    });
-                  } else {
-                    alert("Please select a weight and price.");
-                  }
-                }}
-              >
-                Add to Cart
-              </button>)}
+              {showcart && (
+                <button
+                  className="bg-green-600 text-white px-4 py-2 rounded-md"
+                  onClick={() => handleAddToCart(product)}
+                >
+                  Add to Cart
+                </button>
+              )}
               {showActions && (
                 <div className="flex space-x-2">
                   <button

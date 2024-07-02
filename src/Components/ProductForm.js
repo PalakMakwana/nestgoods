@@ -145,7 +145,7 @@ const ProductForm = ({
                     onClick={() => {
                       const id = uuidv4();
                       push({ id, weight: '', price: '' });
-                      addWeightAndPrice(id); // Track selected pair
+                      addWeightAndPrice(id); 
                     }}
                     className="bg-[#F58634] p-2 text-lg text-[#FBFFFF] rounded-full"
                   >

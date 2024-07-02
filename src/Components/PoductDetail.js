@@ -54,10 +54,10 @@ function PoductDetail() {
             <strong>Description:</strong> {product.description}
           </p>
           <p className="text-lg">
-            <strong>Price:</strong> ${product.price}
+            <strong>Price:</strong> {product.price}
           </p>
           <p className="text-lg">
-            <strong>Weight:</strong> {product.weight} lbs
+            <strong>Weight:</strong> {product.weight} 
           </p>
           <div className="mt-10">
         <button className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
