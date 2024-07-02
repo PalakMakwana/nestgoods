@@ -103,7 +103,7 @@ function Landing() {
       </Modal>
       <div>
         <div className="container mx-auto p-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between ">
            <div className="flex space-x-2 items-center">
            <div className="bg-green-700 p-1 rounded-full">
               <img src={image} alt="" className="h-10 w-10 rounded-full" />
@@ -122,12 +122,8 @@ function Landing() {
                 </motion.li>
               ))}
             </div>
-            <div className="">
-              <UilShoppingCart
-                className="text-green-700 h-8 w-8"
-                onClick={() => navigate("/admin")}
-              />
-              <div className="md:hidden">
+           
+            <div className="md:hidden">
                 <button onClick={() => setNavOpen(!navOpen)}>
                   {navOpen ? (
                     <UilTimes className="text-green-700 h-8 w-8" />
@@ -136,7 +132,6 @@ function Landing() {
                   )}
                 </button>
               </div>
-            </div>
           </div>
           <AnimatePresence>
             {navOpen && (
